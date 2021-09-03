@@ -23,13 +23,15 @@ __version__ = "0.1"
 import os
 import logging
 
+CACHE_PATH = os.environ.get("METVOCAB_CACHEPATH", None)
+
 
 def _init_logging(log_obj):
     """Call to initialise logging."""
     # Read environment variables
     want_level = os.environ.get("METVOCAB_LOGLEVEL", "INFO")
     log_file = os.environ.get("METVOCAB_LOGFILE", None)
-
+    
     # Determine log level and format
     if hasattr(logging, want_level):
         log_level = getattr(logging, want_level)
@@ -60,6 +62,31 @@ def _init_logging(log_obj):
     return
 
 
+def setup_cache_path(cache_path):
+    
+    path_tries = [
+        os.path.join("~", ".local", "share"),
+        os.path.join("~", "Library", "Application Support"),
+    ]
+    
+    for a_path in path_tries:
+        a_path = os.path.expanduser(a_path)
+        if os.path.isdir(a_path):
+            cache_path = a_path
+            break
+
+    if cache_path is None:
+        cache_path = os.path.expanduser("~")
+
+    return cache_path
+
+
 # Logging Setup
 logger = logging.getLogger(__name__)
 _init_logging(logger)
+
+# Cache path setup
+if CACHE_PATH is None:
+    CACHE_PATH = setup_cache_path(CACHE_PATH)
+if CACHE_PATH is None:
+    raise OSError("Was not allowed to create cache folder")
