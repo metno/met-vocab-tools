@@ -43,7 +43,7 @@ def testCoreConfig_Init(monkeypatch, fncDir):
     # Test reading of environment variable
     os.environ["METVOCAB_CACHEPATH"] = "PATH"
     config = Config()
-    assert config.cache_path == "PATH"
+    assert config.cache_path == os.path.abspath("PATH")
 
     with monkeypatch.context() as mp:
         mp.setattr(os.path, "isdir", lambda *a: False)

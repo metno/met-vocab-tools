@@ -26,13 +26,15 @@ logger = logging.getLogger(__name__)
 class Config:
 
     def __init__(self):
-        self.cache_path = os.environ.get("METVOCAB_CACHEPATH", None)
+        cache_path = os.environ.get("METVOCAB_CACHEPATH", None)
 
         # Cache path setup
-        if self.cache_path is None:
-            self.cache_path = self._setup_cache_path(self.cache_path)
+        if cache_path is None:
+            cache_path = self._setup_cache_path(cache_path)
 
+        self.cache_path = os.path.abspath(os.path.expanduser(cache_path))
         os.makedirs(self.cache_path, exist_ok=True)
+        logger.debug("Cache path is %s", self.cache_path)
 
         return
 
