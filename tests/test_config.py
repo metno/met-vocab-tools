@@ -24,7 +24,7 @@ from metvocab.config import Config
 
 
 @pytest.mark.core
-def testCoreConfig_Init(monkeypatch):
+def testCoreConfig_Init(monkeypatch, fncDir):
     """Test the creation and/or discovery of cache_folder"""
 
     config = Config()
@@ -49,5 +49,12 @@ def testCoreConfig_Init(monkeypatch):
         mp.setattr(os.path, "isdir", lambda *a: False)
         mp.setattr(os.path, "expanduser", lambda *a: "~")
         assert config._setup_cache_path(None) == os.path.join("~", "metvocab")
+
+    # Success
+    test_cache = os.path.join(fncDir, "metvocab")
+    os.environ["METVOCAB_CACHEPATH"] = test_cache
+    config = Config()
+    assert config.cache_path == test_cache
+    assert os.path.isdir(test_cache)
 
 # END Test testCoreConfig_Init
