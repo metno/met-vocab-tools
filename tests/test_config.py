@@ -27,10 +27,18 @@ from metvocab.config import Config
 def testCoreConfig_Init(monkeypatch):
     """Test the creation and/or discovery of cache_folder"""
 
-    # How to make this non-linux specific?
     config = Config()
-    a_path = os.path.join("~", ".local", "share", "metvocab")
-    assert config.cache_path == os.path.expanduser(a_path)
+
+    def hack(path):
+        if path == os.path.expanduser(os.path.join("~", ".local", "share")):
+            return True
+        else:
+            return False
+
+    with monkeypatch.context() as mp:
+        mp.setattr(os.path, "isdir", hack)
+        a_path = os.path.join("~", ".local", "share", "metvocab")
+        assert config._setup_cache_path(None) == os.path.expanduser(a_path)
 
     # Test reading of environment variable
     os.environ["METVOCAB_CACHEPATH"] = "PATH"
