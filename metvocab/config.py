@@ -32,7 +32,7 @@ class Config:
         if self.cache_path is None:
             self.cache_path = self._setup_cache_path(self.cache_path)
 
-        os.mkdir(self.cache_path, exist_ok=True)
+        os.makedirs(self.cache_path, exist_ok=True)
 
         return
 
