@@ -26,11 +26,20 @@ from metvocab.config import Config
 @pytest.mark.core
 def testCoreConfig_Init(monkeypatch):
     """Test the creation and/or discovery of cache_folder"""
+
+    # How to make this non-linux specific?
     config = Config()
-    assert config
+    a_path = os.path.join("~", ".local", "share", "metvocab")
+    assert config.cache_path == os.path.expanduser(a_path)
+
+    # Test reading of environment variable
+    os.environ["METVOCAB_CACHEPATH"] = "PATH"
+    config = Config()
+    assert config.cache_path == "PATH"
+
     with monkeypatch.context() as mp:
         mp.setattr(os.path, "isdir", lambda *a: False)
         mp.setattr(os.path, "expanduser", lambda *a: "~")
-        assert config._setup_cache_path(None) == "~/metvocab"
+        assert config._setup_cache_path(None) == os.path.join("~", "metvocab")
 
 # END Test testCoreConfig_Init
