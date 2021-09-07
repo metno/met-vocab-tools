@@ -113,12 +113,8 @@ def testDataCache_CheckCache(monkeypatch, fncDir):
     """Test the data caching when data retrieval succeds, fails and
     tests for cases where cache exists, both when old and not old
     """
-
     def mock_retrieve_data_succ(voc_id, uri):
         return True, {voc_id: uri}
-
-    def mock_retrieve_data_fail(voc_id, uri):
-        return False, {voc_id: uri}
 
     CONFIG.cache_path = fncDir
     dtCache = DataCache()
@@ -134,7 +130,7 @@ def testDataCache_CheckCache(monkeypatch, fncDir):
         assert os.path.isdir(path)
         assert os.path.isfile(json_path)
 
-        with open(json_path, "r") as infile:
+        with open(json_path, mode="r", encoding="utf-8") as infile:
             assert json.load(infile) == {"": "https://met.no/path1/path2"}
 
     # Intentionally not removing path1/path2.json
@@ -163,7 +159,9 @@ def testDataCache_CheckCache(monkeypatch, fncDir):
 
 @pytest.mark.data
 def testDataCache_CreateCache(monkeypatch, fncDir):
-    """Tests the creation of cache, and behavior when data retrieval fails"""
+    """Tests the creation of cache, and behavior when data retrieval
+    fails.
+    """
     def mock_retrieve_data_succ(voc_id, uri):
         return True, {voc_id: uri}
 
@@ -180,7 +178,7 @@ def testDataCache_CreateCache(monkeypatch, fncDir):
         status = dtCache._create_cache(fncDir, json_path, "Hello", "World")
         assert status
         assert os.path.isfile(json_path)
-        with open(json_path, "r") as infile:
+        with open(json_path, mode="r", encoding="utf-8") as infile:
             assert json.load(infile) == {"Hello": "World"}
 
     os.unlink(json_path)
