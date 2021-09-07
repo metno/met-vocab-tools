@@ -82,7 +82,7 @@ class DataCache():
         path = urllib.parse.urlparse(uri).path
         path_list = path.split("/")
 
-        if len(path_list) < 1:
+        if path_list[-1] == "":
             raise ValueError("The provided uri is missing a path: '%s'", uri)
 
         json_path = os.path.join(CONFIG.cache_path, *path_list[:-1])
