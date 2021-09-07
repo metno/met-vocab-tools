@@ -74,39 +74,48 @@ class DataCache():
         return status, data
 
     def _check_cache(self, voc_id, uri):
-        """ToDo: Docstring"""
+        """Parses the uri to establish file-path, checks if cache exists
+        and if it is below allowed caching age given in config. Falls
+        back to old cache if API is unreachable. Returns None if API
+        fails and no cache exists
+        """
         path = urllib.parse.urlparse(uri).path
         path_list = path.split("/")
 
         if len(path_list) < 1:
             raise ValueError("The provided uri is missing a path: '%s'", uri)
 
-        uri_path = os.path.join(CONFIG.cache_path, *path_list[:-1])
-        uri_file = os.path.join(uri_path, path_list[-1]+".json")
+        json_path = os.path.join(CONFIG.cache_path, *path_list[:-1])
+        json_file = os.path.join(json_path, path_list[-1]+".json")
 
-        if os.path.isfile(uri_file):
-            stale = self._check_timestamp(uri_file, CONFIG.max_age)
+        file_exists = False
+
+        if os.path.isfile(json_file):
+            file_exists = True
+            stale = self._check_timestamp(json_file, CONFIG.max_age)
             if stale:
-                self._create_cache(uri_path, uri_file, voc_id, uri)
+                self._create_cache(json_path, json_file, voc_id, uri)
         else:
-            self._create_cache(uri_path, uri_file, voc_id, uri)
+            file_exists = self._create_cache(json_path, json_file, voc_id, uri)
 
-        with open(uri_file, mode="r", encoding="utf-8") as infile:
-            data = json.load(infile)
+        if file_exists:
+            with open(json_file, mode="r", encoding="utf-8") as infile:
+                data = json.load(infile)
+            return data
+        else:
+            return None
 
-        return data
-
-    def _create_cache(self, uri_path, uri_file, voc_id, uri):
+    def _create_cache(self, json_path, json_file, voc_id, uri):
         """Sends a request to the api, and caches the data"""
         status, data = self._retrieve_data(voc_id, uri)
         if status:
-            os.makedirs(uri_path, exist_ok=True)
-            with open(uri_file, mode="w", encoding="utf-8") as outfile:
+            os.makedirs(json_path, exist_ok=True)
+            with open(json_file, mode="w", encoding="utf-8") as outfile:
                 json.dump(data, outfile)
             return True
         return False
 
-    def _check_timestamp(uri_file, max_age):
+    def _check_timestamp(self, uri_file, max_age):
         """Checks timestamp of file, if older than max_age seconds
         returns True, if younger than max_age seconds returns False.
         """
