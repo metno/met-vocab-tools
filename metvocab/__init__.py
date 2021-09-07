@@ -23,8 +23,6 @@ __version__ = "0.1"
 import os
 import logging
 
-from metvocab.config import Config
-
 CACHE_PATH = os.environ.get("METVOCAB_CACHEPATH", None)
 
 
@@ -67,5 +65,3 @@ def _init_logging(log_obj):
 # Logging Setup
 logger = logging.getLogger(__name__)
 _init_logging(logger)
-
-CONFIG = Config()
