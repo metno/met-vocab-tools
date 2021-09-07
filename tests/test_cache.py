@@ -17,11 +17,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import os
 import json
 import pytest
 import urllib.error
 import urllib.request
 
+from tools import writeFile
+
+from metvocab import CONFIG
 from metvocab.cache import DataCache
 
 
@@ -102,3 +106,103 @@ def testLiveCache_RetrieveData():
     assert data.get("@context", None) is not None
 
 # END Test testLiveCache_RetrieveData
+
+
+@pytest.mark.data
+def testDataCache_CheckCache(monkeypatch, fncDir):
+    def mock_retrieve_data_succ(voc_id, uri):
+        return True, {voc_id: uri}
+
+    def mock_retrieve_data_fail(voc_id, uri):
+        return False, {voc_id: uri}
+
+    CONFIG.cache_path = fncDir
+    dtCache = DataCache()
+
+    with pytest.raises(ValueError):
+        dtCache._check_cache("", "https://met.no")
+
+    with monkeypatch.context() as mp:
+        mp.setattr(dtCache, "_retrieve_data", mock_retrieve_data_succ)
+        dtCache._check_cache("", "https://met.no/path1/path2")
+        path = os.path.join(fncDir, "path1")
+        json_path = os.path.join(path, "path2.json")
+        assert os.path.isdir(path)
+        assert os.path.isfile(json_path)
+
+        with open(json_path, "r") as infile:
+            assert json.load(infile) == {"": "https://met.no/path1/path2"}
+
+    # Intentionally not removing path1/path2.json
+    with monkeypatch.context() as mp:
+        mp.setattr(dtCache, "_retrieve_data", mock_retrieve_data_succ)
+        data = dtCache._check_cache("new_vocab", "https://met.no/path1/path2")
+
+        # Since file is new, the file is not overwritten with vocab = new_vocab
+        assert data == {"": "https://met.no/path1/path2"}
+
+        mp.setattr(dtCache, "_check_timestamp", lambda *a: True)
+        # File is now stale, so overwritten with new_vocab as voc_id
+        data = dtCache._check_cache("new_vocab", "https://met.no/path1/path2")
+        assert data != {"": "https://met.no/path1/path2"}
+        assert data == {"new_vocab": "https://met.no/path1/path2"}
+
+    os.unlink(json_path)
+
+    with monkeypatch.context() as mp:
+        mp.setattr(dtCache, "_retrieve_data", lambda *a: (False, {}))
+        data = dtCache._check_cache("new_vocab", "https://met.no/path1/path2")
+        assert data is None
+
+# END Test testDataCache_CheckCache
+
+
+@pytest.mark.data
+def testDataCache_CreateCache(monkeypatch, fncDir):
+    def mock_retrieve_data_succ(voc_id, uri):
+        return True, {voc_id: uri}
+
+    def mock_retrieve_data_fail(voc_id, uri):
+        return False, {voc_id: uri}
+
+    json_path = os.path.join(fncDir, "mock.json")
+
+    dtCache = DataCache()
+
+    # Check case where _retrieve_data is success
+    with monkeypatch.context() as mp:
+        mp.setattr(dtCache, "_retrieve_data", mock_retrieve_data_succ)
+        status = dtCache._create_cache(fncDir, json_path, "Hello", "World")
+        assert status
+        assert os.path.isfile(json_path)
+        with open(json_path, "r") as infile:
+            assert json.load(infile) == {"Hello": "World"}
+
+    os.unlink(json_path)
+    # If _retrieve_data fails
+    with monkeypatch.context() as mp:
+        mp.setattr(dtCache, "_retrieve_data", mock_retrieve_data_fail)
+        status = dtCache._create_cache(fncDir, json_path, "Hello", "World")
+        assert not os.path.isfile(json_path)
+        assert not status
+
+# END Test testDataCache_CreateCache
+
+
+@pytest.mark.data
+def testDataCache_CheckTimestamp(fncDir):
+    dtCache = DataCache()
+    old_file = os.path.join(fncDir, "old.json")
+    new_file = os.path.join(fncDir, "new.json")
+    writeFile(new_file, "mockinfo")
+    writeFile(old_file, "mockinfo")
+
+    # Manually set access and modified times of old_file
+    os.utime(old_file, (100, 100))
+
+    # Check if old is older than 1 day
+    assert dtCache._check_timestamp(old_file, 86400) is True
+    # Check if newly created file within 1 day threshold
+    assert dtCache._check_timestamp(new_file, 86400) is False
+
+# END Test testDataCache_CheckTimestamp
