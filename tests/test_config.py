@@ -24,19 +24,32 @@ from metvocab.config import Config
 
 
 @pytest.mark.core
-def testCoreConfig_Init(monkeypatch, fncDir):
-    """Test the creation and/or discovery of cache_folder"""
-
+def testCoreConfig_Init():
     config = Config()
 
-    def hack(path):
+    # check max_age is default 7 days in seconds
+    assert config.max_age == 7*24*60*60
+
+    os.environ["METVOCAB_CACHEDAYS"] = "14"
+    config = Config()
+    assert config.max_age == 14*24*60*60
+
+# END Test testCoreConfig_Init
+
+
+@pytest.mark.core
+def testCoreConfig_Cache(monkeypatch, fncDir):
+    """Test the creation and/or discovery of cache_folder"""
+    def mock_expand_user(path):
         if path == os.path.expanduser(os.path.join("~", ".local", "share")):
             return True
         else:
             return False
 
+    config = Config()
+
     with monkeypatch.context() as mp:
-        mp.setattr(os.path, "isdir", hack)
+        mp.setattr(os.path, "isdir", mock_expand_user)
         a_path = os.path.join("~", ".local", "share", "metvocab")
         assert config._setup_cache_path(None) == os.path.expanduser(a_path)
 
@@ -57,4 +70,4 @@ def testCoreConfig_Init(monkeypatch, fncDir):
     assert config.cache_path == test_cache
     assert os.path.isdir(test_cache)
 
-# END Test testCoreConfig_Init
+# END Test testCoreConfig_Cache

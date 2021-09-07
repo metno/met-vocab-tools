@@ -42,7 +42,7 @@ class Config:
             # 7 days
             max_age = 7
         # Convert to seconds internally
-        self.max_age = max_age*24*60*60
+        self.max_age = int(max_age)*24*60*60
 
         return
 
