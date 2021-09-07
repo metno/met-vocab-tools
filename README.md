@@ -11,6 +11,10 @@ Toolbox for caching and interfacing with [vocab.met.no](https://vocab.met.no/).
 A desired path to be used for caching can be provided by the environment variable
 `METVOCAB_CACHEPATH`, otherwise a system-specific fallback will be used.
 
+The default maximum age of the cached files before they are downloaded again is 7 days. You can
+change this limit by setting the `METVOCAB_MAXAGE` environment variable. Decimal values are
+allowed. Minimum value is 1 hour.
+
 ## Debugging
 
 To increase logging level to include info and debug messages, set the environment variable

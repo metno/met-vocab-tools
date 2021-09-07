@@ -85,6 +85,11 @@ def testDataCache_CachePath(tstCache, monkeypatch):
         tstCache._setup_cache_path()
         assert tstCache._max_age == 14*86400
 
+    with monkeypatch.context() as mp:
+        mp.setenv("METVOCAB_MAXAGE", "0")
+        tstCache._setup_cache_path()
+        assert tstCache._max_age == 3600
+
 # END Test testDataCache_CachePath
 
 

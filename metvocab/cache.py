@@ -172,7 +172,7 @@ class DataCache():
 
         # Read max age and convert to seconds internally
         max_age = os.environ.get("METVOCAB_MAXAGE", "7")
-        self._max_age = round(float(max_age)*86400)
+        self._max_age = max(round(float(max_age)*86400), 3600)
 
         return
 
