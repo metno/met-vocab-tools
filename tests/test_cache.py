@@ -110,6 +110,10 @@ def testLiveCache_RetrieveData():
 
 @pytest.mark.data
 def testDataCache_CheckCache(monkeypatch, fncDir):
+    """Test the data caching when data retrieval succeds, fails and
+    tests for cases where cache exists, both when old and not old
+    """
+
     def mock_retrieve_data_succ(voc_id, uri):
         return True, {voc_id: uri}
 
@@ -159,6 +163,7 @@ def testDataCache_CheckCache(monkeypatch, fncDir):
 
 @pytest.mark.data
 def testDataCache_CreateCache(monkeypatch, fncDir):
+    """Tests the creation of cache, and behavior when data retrieval fails"""
     def mock_retrieve_data_succ(voc_id, uri):
         return True, {voc_id: uri}
 
@@ -191,6 +196,8 @@ def testDataCache_CreateCache(monkeypatch, fncDir):
 
 @pytest.mark.data
 def testDataCache_CheckTimestamp(fncDir):
+    """Tests _check_timestamp method in Cache class when file is fresh
+    and when file is stale"""
     dtCache = DataCache()
     old_file = os.path.join(fncDir, "old.json")
     new_file = os.path.join(fncDir, "new.json")
