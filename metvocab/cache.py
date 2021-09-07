@@ -94,7 +94,10 @@ class DataCache():
         else:
             self._create_cache(uri_path, uri_file, voc_id, uri)
 
-        return json.load(uri_file)
+        with open(uri_file, "r") as infile:
+            data = json.load(infile)
+
+        return data
 
     def _create_cache(self, uri_path, uri_file, voc_id, uri):
         """Sends a request to the api, and caches the data"""
