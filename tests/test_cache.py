@@ -19,8 +19,8 @@ limitations under the License.
 
 import json
 import pytest
-import urllib.request
 import urllib.error
+import urllib.request
 
 from metvocab.cache import DataCache
 

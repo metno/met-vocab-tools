@@ -36,13 +36,9 @@ class Config:
         os.makedirs(self.cache_path, exist_ok=True)
         logger.debug("Cache path is %s", self.cache_path)
 
-        # Must be given as day or hour?
-        max_age = os.environ.get("METVOCAB_CACHEDAYS", None)
-        if max_age is None:
-            # 7 days
-            max_age = 7
-        # Convert to seconds internally
-        self.max_age = int(max_age)*24*60*60
+        # Read max age and convert to seconds internally
+        max_age = os.environ.get("METVOCAB_MAXAGE", "7")
+        self.max_age = round(float(max_age)*86400)
 
         return
 
@@ -63,3 +59,5 @@ class Config:
             cache_path = os.path.join(os.path.expanduser("~"))
 
         return os.path.join(cache_path, "metvocab")
+
+# END Class Config

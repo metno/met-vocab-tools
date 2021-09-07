@@ -22,16 +22,13 @@ import sys
 import json
 import time
 import logging
-import urllib.request
 import urllib.parse
 import urllib.error
+import urllib.request
 
-from metvocab.config import Config
-
+from metvocab import CONFIG
 
 logger = logging.getLogger(__name__)
-
-CONFIG = Config()
 
 API_ROOT_URL = "https://vocab.met.no/rest/v1"
 
@@ -77,24 +74,24 @@ class DataCache():
         return status, data
 
     def _check_cache(self, voc_id, uri):
+        """ToDo: Docstring"""
         path = urllib.parse.urlparse(uri).path
         path_list = path.split("/")
 
-        if len(path_list) < 2:
-            # should atleast be vocab and one element group
-            pass
+        if len(path_list) < 1:
+            raise ValueError("The provided uri is missing a path: '%s'", uri)
 
-        uri_path = os.path.join(CONFIG.cache_path, path_list[:-1])
+        uri_path = os.path.join(CONFIG.cache_path, *path_list[:-1])
         uri_file = os.path.join(uri_path, path_list[-1]+".json")
 
         if os.path.isfile(uri_file):
             stale = self._check_timestamp(uri_file, CONFIG.max_age)
-            if not stale:
+            if stale:
                 self._create_cache(uri_path, uri_file, voc_id, uri)
         else:
             self._create_cache(uri_path, uri_file, voc_id, uri)
 
-        with open(uri_file, "r") as infile:
+        with open(uri_file, mode="r", encoding="utf-8") as infile:
             data = json.load(infile)
 
         return data
@@ -104,21 +101,18 @@ class DataCache():
         status, data = self._retrieve_data(voc_id, uri)
         if status:
             os.makedirs(uri_path, exist_ok=True)
-            with open(uri_file, "w") as outfile:
+            with open(uri_file, mode="w", encoding="utf-8") as outfile:
                 json.dump(data, outfile)
-        else:
-            # Should fail with error?
-            pass
+            return True
+        return False
 
     def _check_timestamp(uri_file, max_age):
-        """Checks timestamp of file, if older than max_age seconds returns True
-        , if younger than max_age seconds returns False"""
+        """Checks timestamp of file, if older than max_age seconds
+        returns True, if younger than max_age seconds returns False.
+        """
         file_age = os.path.getmtime(uri_file)
-        now = time.time()
-        if (now - file_age) > max_age:
+        if (time.time() - file_age) > max_age:
             return True
-        else:
-            return False
-
+        return False
 
 # END Class DataCache

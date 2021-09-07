@@ -25,14 +25,15 @@ from metvocab.config import Config
 
 @pytest.mark.core
 def testCoreConfig_Init():
+    """ToDo: Docstring"""
     config = Config()
 
-    # check max_age is default 7 days in seconds
-    assert config.max_age == 7*24*60*60
+    # Check max_age is default 7 days in seconds
+    assert config.max_age == 7*86400
 
-    os.environ["METVOCAB_CACHEDAYS"] = "14"
+    os.environ["METVOCAB_MAXAGE"] = "14"
     config = Config()
-    assert config.max_age == 14*24*60*60
+    assert config.max_age == 14*86400
 
 # END Test testCoreConfig_Init
 
