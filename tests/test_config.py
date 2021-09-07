@@ -25,7 +25,7 @@ from metvocab.config import Config
 
 @pytest.mark.core
 def testCoreConfig_Init():
-    """ToDo: Docstring"""
+    """Test initialization of max_age"""
     config = Config()
 
     # Check max_age is default 7 days in seconds
