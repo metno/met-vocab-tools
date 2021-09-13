@@ -40,8 +40,7 @@ def testCoreLookup_Init():
 
 @pytest.mark.live
 def testLiveLookup_InitVocab():
-    """
-    """
+    """Tests initialisation of vocabulary against the live api"""
     lookup = Lookup("mmd", "https://vocab.met.no/mmd/Access_Constraint")
 
     lookup.init_vocab()
@@ -53,8 +52,7 @@ def testLiveLookup_InitVocab():
 
 @pytest.mark.core
 def testCoreLookup_InitVocab(monkeypatch, filesDir):
-    """
-    """
+    """Tests initialisation of vocabulary against local files"""
     json_path = os.path.join(filesDir, "Access_Constraint.json")
 
     with open(json_path, mode="r", encoding="utf-8") as infile:
@@ -72,8 +70,7 @@ def testCoreLookup_InitVocab(monkeypatch, filesDir):
 
 @pytest.mark.core
 def testCoreLookup_CheckConceptValue():
-    """
-    """
+    """Tests check_concept_value function in lookup class"""
     lookup = Lookup("mmd", "https://vocab.met.no/mmd/Access_Constraint")
     lookup._concept_values = set(["Open", "Registered users only (automated approval)"])
 
@@ -88,8 +85,7 @@ def testCoreLookup_CheckConceptValue():
 
 @pytest.mark.core
 def testLookup_CheckIsConcept():
-    """
-    """
+    """Tests check_is_concept function in lookup class"""
     lookup = Lookup("mmd", "https://vocab.met.no/mmd/Access_Constraint")
     assert lookup._check_is_concept("skos:Concept") is True
     assert lookup._check_is_concept(["skos:Concept", "NONE"]) is True

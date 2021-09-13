@@ -244,7 +244,8 @@ def testCoreCache_CreateCache(tstCache, monkeypatch, fncDir):
 @pytest.mark.core
 def testCoreCache_CheckTimestamp(tstCache, fncDir):
     """Tests _check_timestamp method in Cache class when file is fresh
-    and when file is stale"""
+    and when file is stale
+    """
     old_file = os.path.join(fncDir, "old.json")
     new_file = os.path.join(fncDir, "new.json")
     writeFile(new_file, "mockinfo")
