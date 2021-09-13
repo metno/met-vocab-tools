@@ -66,11 +66,6 @@ class Lookup():
             raise ValueError("Attribute 'value' must be a string")
         return value in self._concept_values
 
-    def status(self):
-        """
-        """
-        pass
-
     ##
     #  Internal Functions
     ##
