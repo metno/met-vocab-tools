@@ -23,15 +23,25 @@ from metvocab.cache import DataCache
 class Lookup():
 
     def __init__(self, voc_id, uri):
+
         self._voc_id = voc_id
         self._uri = uri
-        self._cache = DataCache()
+
         self._data = None
+        self._cache = DataCache()
         self._is_initialised = False
         self._concept_values = set()
 
+        return
+
+    @property
+    def is_initialised(self):
+        """Read the initialised state of the class."""
+        return self._is_initialised
+
     def init_vocab(self):
-        """
+        """Initialise vocabulary class by loading the data from the
+        cache class.
         """
         self._data = self._cache.get_vocab(self._voc_id, self._uri)
 
@@ -45,8 +55,11 @@ class Lookup():
 
         self._is_initialised == len(self._concept_values) > 0
 
+        return
+
     def check_concept_value(self, value):
-        """
+        """Lookup a value in the concept value set and return true if it
+        is defined.
         """
         if not isinstance(value, str):
             raise ValueError("Attribute 'value' must be a string")
@@ -62,7 +75,8 @@ class Lookup():
     ##
 
     def _check_is_concept(self, value):
-        """
+        """Checks that a value that can be either a list or a string
+        contains the type definition of a concept dictionary object.
         """
         if isinstance(value, list):
             return "skos:Concept" in value
