@@ -23,13 +23,17 @@ from metvocab.cache import DataCache
 class Lookup():
 
     def __init__(self, voc_id, uri):
-        self._cache = DataCache
+        self._voc_id = voc_id
+        self._uri = uri
+        self._cache = DataCache()
         self._data = None
         self._is_initialised = False
         self._concept_values = set()
 
     def init_vocab(self):
-        self._data = self._cache.get_vocab()
+        """
+        """
+        self._data = self._cache.get_vocab(self._voc_id, self._uri)
 
         for graph in self._data.get("graph", []):
             if self._check_is_concept(graph.get("type", None)):
@@ -42,11 +46,15 @@ class Lookup():
         self._is_initialised == len(self._concept_values) > 0
 
     def check_concept_value(self, value):
+        """
+        """
         if not isinstance(value, str):
             raise ValueError("Attribute 'value' must be a string")
         return value in self._concept_values
 
-    def status():
+    def status(self):
+        """
+        """
         pass
 
     ##
@@ -54,6 +62,8 @@ class Lookup():
     ##
 
     def _check_is_concept(self, value):
+        """
+        """
         if isinstance(value, list):
             return "skos:Concept" in value
         elif isinstance(value, str):
