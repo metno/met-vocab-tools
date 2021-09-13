@@ -45,6 +45,7 @@ class Lookup():
         """
         self._data = self._cache.get_vocab(self._voc_id, self._uri)
 
+        self._concept_values = set()
         for graph in self._data.get("graph", []):
             if self._check_is_concept(graph.get("type", None)):
                 prefLabel = graph.get("prefLabel", None)
@@ -53,7 +54,7 @@ class Lookup():
                     if value is not None:
                         self._concept_values.add(value)
 
-        self._is_initialised == len(self._concept_values) > 0
+        self._is_initialised = len(self._concept_values) > 0
 
         return
 
