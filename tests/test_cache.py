@@ -53,7 +53,7 @@ class MockResponse():
 
 
 @pytest.mark.core
-def testDataCache_CachePath(tstCache, monkeypatch):
+def testCoreCache_CachePath(tstCache, monkeypatch):
     """Test the creation and/or discovery of cache_folder"""
     def mock_isdir(path):
         if path == os.path.expanduser(os.path.join("~", ".local", "share")):
@@ -90,11 +90,11 @@ def testDataCache_CachePath(tstCache, monkeypatch):
         tstCache._setup_cache_path()
         assert tstCache._max_age == 3600
 
-# END Test testDataCache_CachePath
+# END Test testCoreCache_CachePath
 
 
-@pytest.mark.data
-def testDataCache_RetrieveData(tstCache, monkeypatch, caplog):
+@pytest.mark.core
+def testCoreCache_RetrieveData(tstCache, monkeypatch, caplog):
     """Test the data retrieval function."""
     testUri = "https://vocab.met.no/mmd/Access_Constraint"
 
@@ -144,7 +144,7 @@ def testDataCache_RetrieveData(tstCache, monkeypatch, caplog):
         assert data == m_data
         assert tstCache.get_vocab("mmd", testUri) == data
 
-# END Test testDataCache_RetrieveData
+# END Test testCoreCache_RetrieveData
 
 
 @pytest.mark.live
@@ -162,8 +162,8 @@ def testLiveCache_RetrieveData(tstCache, tmpDir):
 # END Test testLiveCache_RetrieveData
 
 
-@pytest.mark.data
-def testDataCache_GetData(tstCache, monkeypatch, fncDir):
+@pytest.mark.core
+def testCoreCache_GetData(tstCache, monkeypatch, fncDir):
     """Test the data caching when data retrieval succeds, fails and
     tests for cases where cache exists, both when old and not old
     """
@@ -205,11 +205,11 @@ def testDataCache_GetData(tstCache, monkeypatch, fncDir):
         data = tstCache._get_data("new_vocab", "https://met.no/path1/path2")
         assert data is None
 
-# END Test testDataCache_GetData
+# END Test testCoreCache_GetData
 
 
-@pytest.mark.data
-def testDataCache_CreateCache(tstCache, monkeypatch, fncDir):
+@pytest.mark.core
+def testCoreCache_CreateCache(tstCache, monkeypatch, fncDir):
     """Tests the creation of cache, and behavior when data retrieval
     fails.
     """
@@ -238,13 +238,14 @@ def testDataCache_CreateCache(tstCache, monkeypatch, fncDir):
         assert not os.path.isfile(json_path)
         assert not status
 
-# END Test testDataCache_CreateCache
+# END Test testCoreCache_CreateCache
 
 
-@pytest.mark.data
-def testDataCache_CheckTimestamp(tstCache, fncDir):
+@pytest.mark.core
+def testCoreCache_CheckTimestamp(tstCache, fncDir):
     """Tests _check_timestamp method in Cache class when file is fresh
-    and when file is stale"""
+    and when file is stale
+    """
     old_file = os.path.join(fncDir, "old.json")
     new_file = os.path.join(fncDir, "new.json")
     writeFile(new_file, "mockinfo")
@@ -258,4 +259,4 @@ def testDataCache_CheckTimestamp(tstCache, fncDir):
     # Check if newly created file within 1 day threshold
     assert tstCache._check_timestamp(new_file, 86400) is False
 
-# END Test testDataCache_CheckTimestamp
+# END Test testCoreCache_CheckTimestamp
