@@ -24,16 +24,40 @@ class Lookup():
 
     def __init__(self, voc_id, uri):
         self._cache = DataCache
-        self.is_initialised = False
+        self._data = None
+        self._is_initialised = False
+        self._concept_values = set()
 
-        pass
+    def init_vocab(self):
+        self._data = self._cache.get_vocab()
 
-    def create_vocab(self):
-        self.data = self._cache.get_vocab()
-        self.is_initialised = True
+        for graph in self._data.get("graph", []):
+            if self._check_is_concept(graph.get("type", None)):
+                prefLabel = graph.get("prefLabel", None)
+                if prefLabel is not None:
+                    value = prefLabel.get("value", None)
+                    if value is not None:
+                        self._concept_values.add(value)
 
-    def lookup():
-        pass
+        self._is_initialised == len(self._concept_values) > 0
+
+    def check_concept_value(self, value):
+        if not isinstance(value, str):
+            raise ValueError("Attribute 'value' must be a string")
+        return value in self._concept_values
 
     def status():
         pass
+
+    ##
+    #  Internal Functions
+    ##
+
+    def _check_is_concept(self, value):
+        if isinstance(value, list):
+            return "skos:Concept" in value
+        elif isinstance(value, str):
+            return "skos:Concept" == value
+        return False
+
+# END Class Lookup
