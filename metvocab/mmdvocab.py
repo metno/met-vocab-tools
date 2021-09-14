@@ -20,7 +20,7 @@ limitations under the License.
 from metvocab.cache import DataCache
 
 
-class Lookup():
+class MMDVocab():
 
     def __init__(self, voc_id, uri):
 
@@ -80,4 +80,4 @@ class Lookup():
             return "skos:Concept" == value
         return False
 
-# END Class Lookup
+# END Class MMDVocab
