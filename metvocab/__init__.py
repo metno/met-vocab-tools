@@ -23,9 +23,10 @@ __version__ = "0.1"
 import os
 import logging
 
+from metvocab.mmdvocab import MMDVocab
 from metvocab.cfstd import CFStandard
 
-__all__ = ["CFStandard"]
+__all__ = ["MMDVocab", "CFStandard"]
 
 CACHE_PATH = os.environ.get("METVOCAB_CACHEPATH", None)
 

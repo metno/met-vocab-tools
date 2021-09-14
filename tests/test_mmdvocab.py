@@ -1,6 +1,6 @@
 """
-MetVocab : MMDVocab Init Test
-===========================
+MetVocab : MMD Vocabulary Class Tests
+=====================================
 
 Copyright 2021 MET Norway
 

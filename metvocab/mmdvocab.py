@@ -1,6 +1,6 @@
 """
-MetVocab : Lookup Class
-=======================
+MetVocab : MMD Vocabulary Class
+===============================
 
 Copyright 2021 MET Norway
 
