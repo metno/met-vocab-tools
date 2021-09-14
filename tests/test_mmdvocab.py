@@ -21,7 +21,7 @@ import os
 import json
 import pytest
 
-from metvocab.mmdvocab import MMDVocab
+from metvocab import MMDVocab
 
 
 @pytest.mark.core
@@ -45,7 +45,6 @@ def testLiveMMDVocab_InitVocab():
 
     lookup.init_vocab()
     assert lookup.is_initialised is True
-
 
 # END Test testLiveMMDVocab_InitVocab
 
