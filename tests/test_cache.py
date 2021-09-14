@@ -176,7 +176,7 @@ def testCoreCache_GetData(tstCache, monkeypatch, fncDir):
     with monkeypatch.context() as mp:
         mp.setattr(tstCache, "_retrieve_data", mock_retrieve_data_succ)
         tstCache._get_data("", "https://met.no/path1/path2")
-        path = os.path.join(fncDir, "path1")
+        path = os.path.join(fncDir, "met.no", "path1")
         json_path = os.path.join(path, "path2.json")
         assert os.path.isdir(path)
         assert os.path.isfile(json_path)
@@ -184,21 +184,37 @@ def testCoreCache_GetData(tstCache, monkeypatch, fncDir):
         with open(json_path, mode="r", encoding="utf-8") as infile:
             assert json.load(infile) == {"": "https://met.no/path1/path2"}
 
+        os.unlink(json_path)
+
+    with monkeypatch.context() as mp:
+        mp.setattr(tstCache, "_retrieve_data", mock_retrieve_data_succ)
+        tstCache._get_data("", "https://met.no:80/path1/path2")
+        path = os.path.join(fncDir, "met.no", "path1")
+        json_path = os.path.join(path, "path2.json")
+        assert os.path.isdir(path)
+        assert os.path.isfile(json_path)
+
+        with open(json_path, mode="r", encoding="utf-8") as infile:
+            assert json.load(infile) == {"": "https://met.no:80/path1/path2"}
+
+        os.unlink(json_path)
+
     # Intentionally not removing path1/path2.json
     with monkeypatch.context() as mp:
         mp.setattr(tstCache, "_retrieve_data", mock_retrieve_data_succ)
-        data = tstCache._get_data("new_vocab", "https://met.no/path1/path2")
+        tstCache._get_data("", "https://met.no/path1/path2")
 
         # Since file is new, the file is not overwritten with vocab = new_vocab
+        data = tstCache._get_data("new_vocab", "https://met.no/path1/path2")
         assert data == {"": "https://met.no/path1/path2"}
 
         mp.setattr(tstCache, "_check_timestamp", lambda *a: True)
         # File is now stale, so overwritten with new_vocab as voc_id
         data = tstCache._get_data("new_vocab", "https://met.no/path1/path2")
-        assert data != {"": "https://met.no/path1/path2"}
+        assert data != {"": "https://met.no:80/path1/path2"}
         assert data == {"new_vocab": "https://met.no/path1/path2"}
 
-    os.unlink(json_path)
+        os.unlink(json_path)
 
     with monkeypatch.context() as mp:
         mp.setattr(tstCache, "_retrieve_data", lambda *a: (False, {}))
