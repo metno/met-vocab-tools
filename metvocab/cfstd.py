@@ -17,10 +17,38 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import lxml
+
 
 class CFStandard():
 
     def __init__(self):
+
+        self._standard_names = set()
+        self._is_initialised = False
+
         return
+
+    @property
+    def is_initialised(self):
+        """Read the initialised state of the class."""
+        return self._is_initialised
+
+    def init_vocab(self):
+        """Initialise vocabulary class by loading the data from vocab
+        file. The vocab file is downloaded in XML format from:
+        https://cfconventions.org/standard-names.html
+        """
+        self._standard_names = set()
+
+        self._is_initialised = len(self._concept_values) > 0
+
+        return
+
+    def check_standard_name(self, value):
+        """Look up a value in the list of standard names."""
+        if isinstance(value, str):
+            return value in self._standard_names
+        return False
 
 # END Class CFStandard
