@@ -1,5 +1,5 @@
 """
-MetVocab : Lookup Init Test
+MetVocab : MMDVocab Init Test
 ===========================
 
 Copyright 2021 MET Norway
@@ -21,43 +21,43 @@ import os
 import json
 import pytest
 
-from metvocab.lookup import Lookup
+from metvocab.mmdvocab import MMDVocab
 
 
 @pytest.mark.core
-def testCoreLookup_Init():
-    """Test the creation initialisation of the Lookup class"""
+def testCoreMMDVocab_Init():
+    """Test the creation initialisation of the MMDVocab class"""
     with pytest.raises(TypeError):
-        lookup = Lookup()
+        lookup = MMDVocab()
 
-    lookup = Lookup("mmd", "https://vocab.met.no/mmd/Access_Constraint")
+    lookup = MMDVocab("mmd", "https://vocab.met.no/mmd/Access_Constraint")
 
     assert lookup._voc_id == "mmd"
     assert lookup._uri == "https://vocab.met.no/mmd/Access_Constraint"
 
-# END Test testCoreLookup_Init
+# END Test testCoreMMDVocab_Init
 
 
 @pytest.mark.live
-def testLiveLookup_InitVocab():
+def testLiveMMDVocab_InitVocab():
     """Tests initialisation of vocabulary against the live api"""
-    lookup = Lookup("mmd", "https://vocab.met.no/mmd/Access_Constraint")
+    lookup = MMDVocab("mmd", "https://vocab.met.no/mmd/Access_Constraint")
 
     lookup.init_vocab()
     assert lookup.is_initialised is True
 
 
-# END Test testLiveLookup_InitVocab
+# END Test testLiveMMDVocab_InitVocab
 
 
 @pytest.mark.core
-def testCoreLookup_InitVocab(monkeypatch, filesDir):
+def testCoreMMDVocab_InitVocab(monkeypatch, filesDir):
     """Tests initialisation of vocabulary against local files"""
     json_path = os.path.join(filesDir, "Access_Constraint.json")
 
     with open(json_path, mode="r", encoding="utf-8") as infile:
         data = json.load(infile)
-    lookup = Lookup("mmd", "https://vocab.met.no/mmd/Access_Constraint")
+    lookup = MMDVocab("mmd", "https://vocab.met.no/mmd/Access_Constraint")
     with monkeypatch.context() as mp:
         mp.setattr(lookup._cache, "get_vocab", lambda *a: data)
         lookup.init_vocab()
@@ -65,13 +65,13 @@ def testCoreLookup_InitVocab(monkeypatch, filesDir):
 
     # Check invalid json?
 
-# END Test testCoreLookup_InitVocab
+# END Test testCoreMMDVocab_InitVocab
 
 
 @pytest.mark.core
-def testCoreLookup_CheckConceptValue():
+def testCoreMMDVocab_CheckConceptValue():
     """Tests check_concept_value function in lookup class"""
-    lookup = Lookup("mmd", "https://vocab.met.no/mmd/Access_Constraint")
+    lookup = MMDVocab("mmd", "https://vocab.met.no/mmd/Access_Constraint")
     lookup._concept_values = set(["Open", "Registered users only (automated approval)"])
 
     assert lookup.check_concept_value("Open")
@@ -80,17 +80,17 @@ def testCoreLookup_CheckConceptValue():
         lookup.check_concept_value(["Open", "Closed"])
         lookup.check_concept_value(2)
 
-# END Test testCoreLookup_CheckConceptValue
+# END Test testCoreMMDVocab_CheckConceptValue
 
 
 @pytest.mark.core
-def testLookup_CheckIsConcept():
+def testMMDVocab_CheckIsConcept():
     """Tests check_is_concept function in lookup class"""
-    lookup = Lookup("mmd", "https://vocab.met.no/mmd/Access_Constraint")
+    lookup = MMDVocab("mmd", "https://vocab.met.no/mmd/Access_Constraint")
     assert lookup._check_is_concept("skos:Concept") is True
     assert lookup._check_is_concept(["skos:Concept", "NONE"]) is True
     assert lookup._check_is_concept("skos:Collection") is False
     assert lookup._check_is_concept(["skos:Collection", "isothes:ConceptGroup"]) is False
     assert lookup._check_is_concept(None) is False
 
-# END Test testLookup_CheckIsConcept
+# END Test testMMDVocab_CheckIsConcept
