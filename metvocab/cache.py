@@ -54,8 +54,9 @@ class DataCache():
         if API is unreachable. Returns None if API fails and no cache
         exists.
         """
-        path = urllib.parse.urlparse(uri).path
-        path_list = path.split("/")
+        urlbits = urllib.parse.urlparse(uri)
+        path_list = urlbits.path.split("/")
+        path_list.insert(0, urlbits.netloc.split(":")[0])
 
         if path_list[-1] == "":
             raise ValueError("The provided uri is missing a path: '%s'", uri)
