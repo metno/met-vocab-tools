@@ -88,11 +88,19 @@ def testCoreCFStandard_CheckStandardName():
     assert cfstd.check_standard_name(12345) is False
     assert cfstd.check_standard_name(None) is False
 
-    # Valid Names
+    # Valid Standard Names
     assert cfstd.check_standard_name("aerodynamic_particle_diameter") is True
     assert cfstd.check_standard_name("atmosphere_mole_content_of_water_vapor") is True
     assert cfstd.check_standard_name("atmosphere_momentum_diffusivity") is True
     assert cfstd.check_standard_name("mass_concentration_of_ammonia_in_air") is True
     assert cfstd.check_standard_name("mole_fraction_of_isoprene_in_air") is True
+
+    # Check Aliases
+    assert cfstd.check_standard_name("mass_fraction_of_o3_in_air", include_alias=False) is False
+    assert cfstd.check_standard_name("mass_fraction_of_o3_in_air", include_alias=True) is True
+    assert cfstd.check_standard_name("swell_wave_period", include_alias=False) is False
+    assert cfstd.check_standard_name("swell_wave_period", include_alias=True) is True
+    assert cfstd.check_standard_name("longwave_radiance", include_alias=False) is False
+    assert cfstd.check_standard_name("longwave_radiance", include_alias=True) is True
 
 # END Test testCoreCFStandard_CheckStandardName
