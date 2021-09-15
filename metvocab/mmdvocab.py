@@ -1,6 +1,6 @@
 """
-MetVocab : Lookup Class
-=======================
+MetVocab : MMD Vocabulary Class
+===============================
 
 Copyright 2021 MET Norway
 
@@ -34,10 +34,18 @@ class MMDVocab():
 
         return
 
+    ##
+    #  Properties
+    ##
+
     @property
     def is_initialised(self):
-        """Read the initialised state of the class."""
+        """Return the initialised state of the class."""
         return self._is_initialised
+
+    ##
+    #  Methods
+    ##
 
     def init_vocab(self):
         """Initialise vocabulary class by loading the data from the
