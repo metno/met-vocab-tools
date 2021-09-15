@@ -34,6 +34,7 @@ class CFStandard():
     def __init__(self):
 
         self._standard_names = set()
+        self._alias_names = set()
         self._is_initialised = False
 
         # Meta Data
@@ -71,6 +72,7 @@ class CFStandard():
         https://cfconventions.org/standard-names.html
         """
         self._standard_names = set()
+        self._alias_names = set()
         self._is_initialised = False
 
         start_time = time.time()
@@ -86,6 +88,10 @@ class CFStandard():
                 cf_id = cf_elem.attrib.get("id", None)
                 if cf_id is not None:
                     self._standard_names.add(cf_id)
+            elif cf_elem.tag == "alias":
+                cf_id = cf_elem.attrib.get("id", None)
+                if cf_id is not None:
+                    self._alias_names.add(cf_id)
             elif cf_elem.tag == "version_number":
                 self._cf_version_number = cf_elem.text
             elif cf_elem.tag == "last_modified":
@@ -97,10 +103,15 @@ class CFStandard():
 
         return
 
-    def check_standard_name(self, value):
-        """Look up a value in the list of standard names."""
+    def check_standard_name(self, value, include_alias=False):
+        """Look up a value in the list of standard names, and optionally
+        in the alias list.
+        """
         if isinstance(value, str):
-            return value in self._standard_names
+            if value in self._standard_names:
+                return True
+            if include_alias and value in self._alias_names:
+                return True
         return False
 
 # END Class CFStandard
