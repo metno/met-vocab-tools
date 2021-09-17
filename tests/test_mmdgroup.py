@@ -1,6 +1,6 @@
 """
-MetVocab : MMD Vocabulary Class Tests
-=====================================
+MetVocab : MMD Group Class Tests
+================================
 
 Copyright 2021 MET Norway
 
@@ -27,9 +27,14 @@ from metvocab.mmdgroup import MMDGroup
 
 @pytest.mark.live
 def testLiveMMDGroup_Init():
+    """Tests initialisation of group against api at vocab.met.no"""
     group = MMDGroup("mmd", "https://vocab.met.no/mmd/Platform")
+    assert len(group._concepts) == 0
+    group.populate()
     assert len(group._concepts) > 0
+
     group = MMDGroup("mmd", "https://vocab.met.no/mmd/NotAGroup")
+    group.populate()
     assert len(group._concepts) == 0
 
 # END Test testLiveMMDGroup_Init
@@ -37,7 +42,9 @@ def testLiveMMDGroup_Init():
 
 @pytest.mark.live
 def testLiveMMDGroup_Search():
+    """Tests search in group against api at vocab.met.no"""
     group = MMDGroup("mmd", "https://vocab.met.no/mmd/Instrument")
+    group.populate()
 
     modis_dict = {
         "Short_Name": "MODIS",
@@ -65,8 +72,7 @@ def testLiveMMDGroup_Search():
 
 @pytest.mark.core
 def testCoreMMDGroup_Init(filesDir, monkeypatch):
-    """Tests initialisation of vocabulary against local files"""
-
+    """Tests initialisation of group against local files"""
     data = readJson(os.path.join(filesDir, "Instrument.json"))
 
     def mock_get_vocab(self, voc_id, uri):
@@ -77,8 +83,12 @@ def testCoreMMDGroup_Init(filesDir, monkeypatch):
     with monkeypatch.context() as mp:
         mp.setattr(DataCache, "get_vocab", mock_get_vocab)
         group = MMDGroup("mmd", "https://vocab.met.no/mmd/Instrument")
+        assert len(group._concepts) == 0
+        group.populate()
         assert len(group._concepts) > 0
+
         group = MMDGroup("mmd", "https://vocab.met.no/mmd/NotAGroup")
+        group.populate()
         assert len(group._concepts) == 0
 
 # END TEST testCoreMMDGroup_Init
@@ -86,8 +96,7 @@ def testCoreMMDGroup_Init(filesDir, monkeypatch):
 
 @pytest.mark.core
 def testCoreMMDGroup_Search(filesDir):
-    """Tests search of vocabulary against local files"""
-
+    """Tests search in group against local files """
     group_data = readJson(os.path.join(filesDir, "Instrument.json"))
     modis_data = readJson(os.path.join(filesDir, "Instrument", "MODIS.json"))
     olci_data = readJson(os.path.join(filesDir, "Instrument", "OLCI.json"))
@@ -102,6 +111,7 @@ def testCoreMMDGroup_Search(filesDir):
         return {}
 
     group = MMDGroup("mmd", "https://vocab.met.no/mmd/Instrument")
+    group.populate()
 
     modis_dict = {
         "Short_Name": "MODIS",
@@ -124,10 +134,12 @@ def testCoreMMDGroup_Search(filesDir):
     assert group.search("MockSat") != modis_dict
     assert group.search("MockSat") != olci_dict
 
-
 # END TEST testCoreMMDGroup_Search
 
+
+@pytest.mark.core
 def testCoreMMDGroup_GetLabel(monkeypatch):
+    """Test helper function for getting labels"""
     with monkeypatch.context() as mp:
         mp.setattr(DataCache, "get_vocab", lambda *a: {})
         group = MMDGroup("mmd", "https://vocab.met.no/mmd/Platform")
@@ -141,10 +153,12 @@ def testCoreMMDGroup_GetLabel(monkeypatch):
     assert group._get_label(concept_with_dict, "label") == "inner_value"
     assert group._get_label(concept_with_dict, "value") is None
 
-
 # END TEST testCoreMMDGroup_GetLabel
 
+
+@pytest.mark.core
 def testCoreMMDGroup_GetResource(monkeypatch):
+    """Test helper function for getting resources"""
     with monkeypatch.context() as mp:
         mp.setattr(DataCache, "get_vocab", lambda *a: {})
         group = MMDGroup("mmd", "https://vocab.met.no/mmd/Platform")
@@ -153,6 +167,7 @@ def testCoreMMDGroup_GetResource(monkeypatch):
     concept_with_list = {"resource": [{"uri": "https://vocab.met.no"}, {"uri": "wmo.com"}]}
     concept_with_dict = {"resource": {"uri": "https://vocab.met.no"}}
     invalid_concept = {"resource": 123}
+    concept_with_empty_list = {"resource": []}
 
     assert group._get_resource(concept_dict, "resource") == "https://vocab.met.no"
     assert group._get_resource(concept_dict, "resource") != "SomethingElse"
@@ -164,4 +179,7 @@ def testCoreMMDGroup_GetResource(monkeypatch):
     assert group._get_resource(concept_with_dict, "resource") != "SomethingElse"
 
     assert group._get_resource(invalid_concept, "resource") == ""
+
+    assert group._get_resource(concept_with_empty_list, "resource") == ""
+
 # END TEST testCoreMMDGroup_GetResource

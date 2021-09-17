@@ -32,20 +32,13 @@ class MMDGroup():
 
         self._data = self._cache.get_vocab(voc_id, uri)
 
-        # Populate _concepts with data-dictionary for members of uri-group
-        for graph in self._data.get("graph", []):
-            for member in graph.get("skos:member", []):
-                if member.get("uri", None) is not None:
-                    uri = member.get("uri")
-                    cache = DataCache()
-                    data = cache.get_vocab(self._voc_id, uri)
-                    data = self._get_concept_dictionary(data, uri)
-
-                    self._concepts.update({member.get("uri"): data})
-
         return
 
     def search(self, name):
+        """Searches both prefLabel (Short name) and altLabel (Long name)
+        for match with given name, returns both if any match, and
+        resource if resource is present
+        """
         found = False
         for uri, concept in self._concepts.items():
             found |= name == self._get_label(concept, "altLabel")
@@ -58,6 +51,20 @@ class MMDGroup():
                     "Resource": Resource if "wmo" in Resource else None
                 }
         return {}
+
+    def populate(self):
+        """Populate _concepts with dictionary uri: data for members of
+        the given group
+        """
+        for graph in self._data.get("graph", []):
+            for member in graph.get("skos:member", []):
+                if member.get("uri", None) is not None:
+                    uri = member.get("uri")
+                    cache = DataCache()
+                    data = cache.get_vocab(self._voc_id, uri)
+                    data = self._get_concept_dictionary(data, uri)
+
+                    self._concepts.update({member.get("uri"): data})
 
     ##
     #  Internal Functions
@@ -88,7 +95,7 @@ class MMDGroup():
         if isinstance(value, dict):
             return value.get("uri", "")
         elif isinstance(value, list):
-            return value[0].get("uri", "")
+            return value[0].get("uri", "") if len(value) else ""
         elif isinstance(value, str):
             return value
         return ""
