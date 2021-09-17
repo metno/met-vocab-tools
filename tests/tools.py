@@ -19,8 +19,8 @@ limitations under the License.
 
 import json
 
-# File I/O
 
+# File I/O
 
 def readFile(fileName):
     """Returns the content of a file as a string."""
@@ -35,12 +35,12 @@ def writeFile(fileName, fileData):
 
 
 def readJson(fileName):
-    """Returns the content of a file as a json-object."""
+    """Returns the content of a file as a dict."""
     with open(fileName, mode="r", encoding="utf-8") as infile:
         return json.load(infile)
 
-# Exceptions
 
+# Exceptions
 
 def causeOSError(*args, **kwargs):
     """This function will take any arguments and always raise an
