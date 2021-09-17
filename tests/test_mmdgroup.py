@@ -139,7 +139,7 @@ def testCoreMMDGroup_Search(filesDir):
 
 def testCoreMMDGroup_GetLabel(monkeypatch):
     with monkeypatch.context() as mp:
-        mp.setattr(DataCache, "get_vocab", lambda *a : {})
+        mp.setattr(DataCache, "get_vocab", lambda *a: {})
         group = MMDGroup("mmd", "https://vocab.met.no/mmd/Platform")
 
     concept = {"label": "value"}
@@ -152,20 +152,17 @@ def testCoreMMDGroup_GetLabel(monkeypatch):
     assert group._get_label(concept_with_dict, "value") is None
 
 
-
 # END TEST testCoreMMDGroup_GetLabel
-
 
 def testCoreMMDGroup_GetResource(monkeypatch):
     with monkeypatch.context() as mp:
-        mp.setattr(DataCache, "get_vocab", lambda *a : {})
+        mp.setattr(DataCache, "get_vocab", lambda *a: {})
         group = MMDGroup("mmd", "https://vocab.met.no/mmd/Platform")
 
     concept_dict = {"resource": "https://vocab.met.no"}
     concept_with_list = {"resource": [{"uri": "https://vocab.met.no"}, {"uri": "wmo.com"}]}
     concept_with_dict = {"resource": {"uri": "https://vocab.met.no"}}
     invalid_concept = {"resource": 123}
-
 
     assert group._get_resource(concept_dict, "resource") == "https://vocab.met.no"
     assert group._get_resource(concept_dict, "resource") != "SomethingElse"
