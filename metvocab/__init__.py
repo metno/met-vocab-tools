@@ -24,9 +24,10 @@ import os
 import logging
 
 from metvocab.mmdvocab import MMDVocab
+from metvocab.mmdgroup import MMDGroup
 from metvocab.cfstd import CFStandard
 
-__all__ = ["MMDVocab", "CFStandard"]
+__all__ = ["MMDVocab", "MMDGroup", "CFStandard"]
 
 CACHE_PATH = os.environ.get("METVOCAB_CACHEPATH", None)
 

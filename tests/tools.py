@@ -17,6 +17,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import json
+
 
 # File I/O
 
@@ -30,6 +32,12 @@ def writeFile(fileName, fileData):
     """Write the contents of a string to a file."""
     with open(fileName, mode="w", encoding="utf-8") as outFile:
         outFile.write(fileData)
+
+
+def readJson(fileName):
+    """Returns the content of a file as a dict."""
+    with open(fileName, mode="r", encoding="utf-8") as infile:
+        return json.load(infile)
 
 
 # Exceptions
