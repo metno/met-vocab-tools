@@ -27,10 +27,43 @@ class MMDGroup():
         self._voc_id = voc_id
         self._uri = uri
 
-        self._cache = DataCache()
+        self._is_initialised = False
         self._concepts = {}
 
-        self._data = self._cache.get_vocab(voc_id, uri)
+        return
+
+    ##
+    #  Properties
+    ##
+
+    @property
+    def is_initialised(self):
+        """Return the initialised state of the class."""
+        return self._is_initialised
+
+    ##
+    #  Methods
+    ##
+
+    def init_vocab(self):
+        """Populate _concepts with dictionary uri: data for members of
+        the given group
+        """
+        root_cache = DataCache()
+        data = root_cache.get_vocab(self._voc_id, self._uri)
+        self._concepts = {}
+
+        for graph in data.get("graph", []):
+            for member in graph.get("skos:member", []):
+                if member.get("uri", None) is not None:
+                    uri = member.get("uri")
+                    tmp_cache = DataCache()
+                    data = tmp_cache.get_vocab(self._voc_id, uri)
+                    data = self._get_concept_dictionary(data, uri)
+
+                    self._concepts.update({member.get("uri"): data})
+
+        self._is_initialised = bool(self._concepts)
 
         return
 
@@ -40,7 +73,7 @@ class MMDGroup():
         resource if resource is present
         """
         found = False
-        for uri, concept in self._concepts.items():
+        for concept in self._concepts.values():
             found |= name == self._get_label(concept, "altLabel")
             found |= name == self._get_label(concept, "prefLabel")
             if found is True:
@@ -50,21 +83,8 @@ class MMDGroup():
                     "Long_Name": self._get_label(concept, "altLabel"),
                     "Resource": Resource if "wmo" in Resource else None
                 }
+
         return {}
-
-    def populate(self):
-        """Populate _concepts with dictionary uri: data for members of
-        the given group
-        """
-        for graph in self._data.get("graph", []):
-            for member in graph.get("skos:member", []):
-                if member.get("uri", None) is not None:
-                    uri = member.get("uri")
-                    cache = DataCache()
-                    data = cache.get_vocab(self._voc_id, uri)
-                    data = self._get_concept_dictionary(data, uri)
-
-                    self._concepts.update({member.get("uri"): data})
 
     ##
     #  Internal Functions
@@ -99,3 +119,5 @@ class MMDGroup():
         elif isinstance(value, str):
             return value
         return ""
+
+# END Class MMDGroup

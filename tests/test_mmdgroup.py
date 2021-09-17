@@ -29,13 +29,14 @@ from metvocab.mmdgroup import MMDGroup
 def testLiveMMDGroup_Init():
     """Tests initialisation of group against api at vocab.met.no"""
     group = MMDGroup("mmd", "https://vocab.met.no/mmd/Platform")
-    assert len(group._concepts) == 0
-    group.populate()
-    assert len(group._concepts) > 0
+    assert group.is_initialised is False
+
+    group.init_vocab()
+    assert group.is_initialised is True
 
     group = MMDGroup("mmd", "https://vocab.met.no/mmd/NotAGroup")
-    group.populate()
-    assert len(group._concepts) == 0
+    group.init_vocab()
+    assert group.is_initialised is False
 
 # END Test testLiveMMDGroup_Init
 
@@ -44,7 +45,7 @@ def testLiveMMDGroup_Init():
 def testLiveMMDGroup_Search():
     """Tests search in group against api at vocab.met.no"""
     group = MMDGroup("mmd", "https://vocab.met.no/mmd/Instrument")
-    group.populate()
+    group.init_vocab()
 
     modis_dict = {
         "Short_Name": "MODIS",
@@ -83,15 +84,16 @@ def testCoreMMDGroup_Init(filesDir, monkeypatch):
     with monkeypatch.context() as mp:
         mp.setattr(DataCache, "get_vocab", mock_get_vocab)
         group = MMDGroup("mmd", "https://vocab.met.no/mmd/Instrument")
-        assert len(group._concepts) == 0
-        group.populate()
-        assert len(group._concepts) > 0
+        assert group.is_initialised is False
+
+        group.init_vocab()
+        assert group.is_initialised is True
 
         group = MMDGroup("mmd", "https://vocab.met.no/mmd/NotAGroup")
-        group.populate()
-        assert len(group._concepts) == 0
+        group.init_vocab()
+        assert group.is_initialised is False
 
-# END TEST testCoreMMDGroup_Init
+# END Test testCoreMMDGroup_Init
 
 
 @pytest.mark.core
@@ -111,7 +113,7 @@ def testCoreMMDGroup_Search(filesDir):
         return {}
 
     group = MMDGroup("mmd", "https://vocab.met.no/mmd/Instrument")
-    group.populate()
+    group.init_vocab()
 
     modis_dict = {
         "Short_Name": "MODIS",
@@ -134,7 +136,7 @@ def testCoreMMDGroup_Search(filesDir):
     assert group.search("MockSat") != modis_dict
     assert group.search("MockSat") != olci_dict
 
-# END TEST testCoreMMDGroup_Search
+# END Test testCoreMMDGroup_Search
 
 
 @pytest.mark.core
@@ -153,7 +155,7 @@ def testCoreMMDGroup_GetLabel(monkeypatch):
     assert group._get_label(concept_with_dict, "label") == "inner_value"
     assert group._get_label(concept_with_dict, "value") is None
 
-# END TEST testCoreMMDGroup_GetLabel
+# END Test testCoreMMDGroup_GetLabel
 
 
 @pytest.mark.core
@@ -182,4 +184,4 @@ def testCoreMMDGroup_GetResource(monkeypatch):
 
     assert group._get_resource(concept_with_empty_list, "resource") == ""
 
-# END TEST testCoreMMDGroup_GetResource
+# END Test testCoreMMDGroup_GetResource
