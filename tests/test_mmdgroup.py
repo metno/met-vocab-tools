@@ -18,9 +18,9 @@ limitations under the License.
 """
 
 import os
-import json
 import pytest
 
+from tools import readJson
 from metvocab.cache import DataCache
 from metvocab.mmdgroup import MMDGroup
 
@@ -67,10 +67,7 @@ def testLiveMMDGroup_Search():
 def testCoreMMDGroup_Init(filesDir, monkeypatch):
     """Tests initialisation of vocabulary against local files"""
 
-    json_path = os.path.join(filesDir, "Instrument.json")
-
-    with open(json_path, mode="r", encoding="utf-8") as infile:
-        data = json.load(infile)
+    data = readJson(os.path.join(filesDir, "Instrument.json"))
 
     def mock_get_vocab(self, voc_id, uri):
         if uri == "https://vocab.met.no/mmd/Instrument":
@@ -91,16 +88,9 @@ def testCoreMMDGroup_Init(filesDir, monkeypatch):
 def testCoreMMDGroup_Search(filesDir):
     """Tests search of vocabulary against local files"""
 
-    json_group_path = os.path.join(filesDir, "Instrument.json")
-    json_modis_path = os.path.join(filesDir, "Instrument", "MODIS.json")
-    json_olci_path = os.path.join(filesDir, "Instrument", "OLCI.json")
-
-    with open(json_group_path, mode="r", encoding="utf-8") as infile:
-        group_data = json.load(infile)
-    with open(json_modis_path, mode="r", encoding="utf-8") as infile:
-        modis_data = json.load(infile)
-    with open(json_olci_path, mode="r", encoding="utf-8") as infile:
-        olci_data = json.load(infile)
+    group_data = readJson(os.path.join(filesDir, "Instrument.json"))
+    modis_data = readJson(os.path.join(filesDir, "Instrument", "MODIS.json"))
+    olci_data = readJson(os.path.join(filesDir, "Instrument", "OLCI.json"))
 
     def mock_get_vocab(self, voc_id, uri):
         if uri == "https://vocab.met.no/mmd/Instrument":

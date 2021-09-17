@@ -18,9 +18,9 @@ limitations under the License.
 """
 
 import os
-import json
 import pytest
 
+from tools import readJson
 from metvocab import MMDVocab
 
 
@@ -52,10 +52,8 @@ def testLiveMMDVocab_InitVocab():
 @pytest.mark.core
 def testCoreMMDVocab_InitVocab(monkeypatch, filesDir):
     """Tests initialisation of vocabulary against local files"""
-    json_path = os.path.join(filesDir, "Access_Constraint.json")
+    data = readJson(os.path.join(filesDir, "Access_Constraint.json"))
 
-    with open(json_path, mode="r", encoding="utf-8") as infile:
-        data = json.load(infile)
     lookup = MMDVocab("mmd", "https://vocab.met.no/mmd/Access_Constraint")
     with monkeypatch.context() as mp:
         mp.setattr(lookup._cache, "get_vocab", lambda *a: data)
