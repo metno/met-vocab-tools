@@ -148,12 +148,21 @@ def testCoreMMDGroup_GetLabel(monkeypatch):
 
     concept = {"label": "value"}
     concept_with_dict = {"label": {"value": "inner_value"}}
+    concept_with_list = {"label": [{"value": "https://vocab.met.no"}, {"value": "wmo.com"}]}
+    concept_with_empty_list = {"label": []}
+    invalid_concept = {"resource": 123}
+
+    assert group._get_label("NotADict", "label") is None
 
     assert group._get_label(concept, "label") == "value"
     assert group._get_label(concept, "value") is None
 
     assert group._get_label(concept_with_dict, "label") == "inner_value"
     assert group._get_label(concept_with_dict, "value") is None
+
+    assert group._get_label(invalid_concept, "resource") is None
+
+    assert group._get_label(concept_with_empty_list, "label") is None
 
 # END Test testCoreMMDGroup_GetLabel
 
@@ -171,6 +180,8 @@ def testCoreMMDGroup_GetResource(monkeypatch):
     invalid_concept = {"resource": 123}
     concept_with_empty_list = {"resource": []}
 
+    assert group._get_resource("NotADict", "label") == ""
+
     assert group._get_resource(concept_dict, "resource") == "https://vocab.met.no"
     assert group._get_resource(concept_dict, "resource") != "SomethingElse"
 
@@ -183,5 +194,7 @@ def testCoreMMDGroup_GetResource(monkeypatch):
     assert group._get_resource(invalid_concept, "resource") == ""
 
     assert group._get_resource(concept_with_empty_list, "resource") == ""
+
+    assert group._get_resource({"resource": ["hello"]}, "resource") == ""
 
 # END Test testCoreMMDGroup_GetResource
