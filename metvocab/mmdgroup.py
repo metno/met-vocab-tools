@@ -77,11 +77,11 @@ class MMDGroup():
             found |= name == self._get_label(concept, "altLabel")
             found |= name == self._get_label(concept, "prefLabel")
             if found is True:
-                Resource = self._get_resource(concept, "rdfs:seeAlso")
+                resource = self._get_resource(concept, "rdfs:seeAlso")
                 return {
                     "Short_Name": self._get_label(concept, "prefLabel"),
                     "Long_Name": self._get_label(concept, "altLabel"),
-                    "Resource": Resource if "wmo" in Resource else None
+                    "Resource": resource if "wmo" in resource else None
                 }
 
         return {}
@@ -102,22 +102,36 @@ class MMDGroup():
 
     def _get_label(self, concept, label):
         """Helper function for search method"""
-        value = concept.get(label)
+        if isinstance(concept, dict):
+            value = concept.get(label)
+        else:
+            return None
+
         if isinstance(value, str):
             return value
+        elif isinstance(value, list):
+            if len(value) > 0 and isinstance(value[0], dict):
+                return value[0].get("value", None)
         elif isinstance(value, dict):
             return value.get("value", None)
+
         return None
 
     def _get_resource(self, concept, label):
         """Helper function for search method"""
-        value = concept.get(label)
+        if isinstance(concept, dict):
+            value = concept.get(label)
+        else:
+            return ""
+
         if isinstance(value, dict):
             return value.get("uri", "")
         elif isinstance(value, list):
-            return value[0].get("uri", "") if len(value) else ""
+            if len(value) > 0 and isinstance(value[0], dict):
+                return value[0].get("uri", "")
         elif isinstance(value, str):
             return value
+
         return ""
 
 # END Class MMDGroup
