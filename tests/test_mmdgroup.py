@@ -148,7 +148,7 @@ def testCoreMMDGroup_GetLabel(monkeypatch):
 
     concept = {"label": "value"}
     concept_with_dict = {"label": {"value": "inner_value"}}
-    concept_with_list = {"label": [{"value": "https://vocab.met.no"}, {"value": "wmo.com"}]}
+    concept_with_list = {"label": [{"value": "name0"}, {"value": "name1"}]}
     concept_with_empty_list = {"label": []}
     invalid_concept = {"resource": 123}
 
@@ -163,6 +163,9 @@ def testCoreMMDGroup_GetLabel(monkeypatch):
     assert group._get_label(invalid_concept, "resource") is None
 
     assert group._get_label(concept_with_empty_list, "label") is None
+
+    assert group._get_label(concept_with_list, "label") == "name0"
+    assert group._get_label(concept_with_list, "value") is None
 
 # END Test testCoreMMDGroup_GetLabel
 
