@@ -105,6 +105,8 @@ class MMDGroup():
         value = concept.get(label)
         if isinstance(value, str):
             return value
+        elif isinstance(value, list):
+            return value[0].get("value", None) if len(value) else None
         elif isinstance(value, dict):
             return value.get("value", None)
         return None
