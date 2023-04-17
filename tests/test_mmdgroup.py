@@ -187,6 +187,7 @@ def testCoreMMDGroup_SearchLowercase(filesDir):
 
 # END Test testCoreMMDGroup_SearchLowercase
 
+
 @pytest.mark.core
 def testCoreMMDGroup_GetLabel(monkeypatch):
     """Test helper function for getting labels"""
