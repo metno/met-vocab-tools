@@ -86,6 +86,26 @@ class MMDGroup():
 
         return {}
 
+    def search_lowercase(self, name):
+        """Searches both prefLabel (Short name) and altLabel (Long name)
+        for match with given name, but searches with lowercase letters.
+        returns both prefLabel and altLabel if any is found, and resource
+        if resource is present
+        """
+        name = name.lower()
+        found = False
+        for concept in self._concepts.values():
+            found |= name == self._get_label_lowercase(concept, "altLabel")
+            found |= name == self._get_label_lowercase(concept, "prefLabel")
+            if found is True:
+                resource = self._get_resource(concept, "rdfs:seeAlso")
+                return {
+                    "Short_Name": self._get_label(concept, "prefLabel"),
+                    "Long_Name": self._get_label(concept, "altLabel"),
+                    "Resource": resource if "wmo" in resource else None
+                }
+
+        return {}
     ##
     #  Internal Functions
     ##
@@ -115,6 +135,15 @@ class MMDGroup():
         elif isinstance(value, dict):
             return value.get("value", None)
 
+        return None
+
+    def _get_label_lowercase(self, concept, label):
+        """Wrapper function around _get_label to not call
+        lower() on non-str instances
+        """
+        value = self._get_label(concept, label)
+        if isinstance(value, str):
+            return value.lower()
         return None
 
     def _get_resource(self, concept, label):
