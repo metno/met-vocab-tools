@@ -140,6 +140,55 @@ def testCoreMMDGroup_Search(filesDir):
 
 
 @pytest.mark.core
+def testCoreMMDGroup_SearchLowercase(filesDir):
+    """Tests search in group against local files """
+    group_data = readJson(os.path.join(filesDir, "Instrument.json"))
+    modis_data = readJson(os.path.join(filesDir, "Instrument", "MODIS.json"))
+    olci_data = readJson(os.path.join(filesDir, "Instrument", "OLCI.json"))
+
+    def mock_get_vocab(self, voc_id, uri):
+        if uri == "https://vocab.met.no/mmd/Instrument":
+            return group_data
+        elif uri == "https://vocab.met.no/mmd/Instrument/MODIS":
+            return modis_data
+        elif uri == "https://vocab.met.no/mmd/Instrument/OLCI":
+            return olci_data
+        return {}
+
+    group = MMDGroup("mmd", "https://vocab.met.no/mmd/Instrument")
+    group.init_vocab()
+
+    modis_dict = {
+        "Short_Name": "MODIS",
+        "Long_Name": "Moderate-resolution Imaging Spectro-radiometer",
+        "Resource": "https://www.wmo-sat.info/oscar/instruments/view/modis"
+    }
+    olci_dict = {
+        "Short_Name": "OLCI",
+        "Long_Name": "Ocean and Land Colour Imager",
+        "Resource": "https://www.wmo-sat.info/oscar/instruments/view/olci"
+    }
+
+    assert group.search_lowercase("MODIS") == modis_dict
+    assert group.search_lowercase("MODIS") != olci_dict
+
+    assert group.search_lowercase("MoDiS") == modis_dict
+    assert group.search_lowercase("MoDiS") != olci_dict
+
+    assert group.search_lowercase("Ocean and Land Colour Imager") == olci_dict
+    assert group.search_lowercase("Ocean and Land Colour Imager") != modis_dict
+
+    assert group.search_lowercase("ocean and land colour imager") == olci_dict
+    assert group.search_lowercase("ocean and land colour imager") != modis_dict
+
+    assert group.search_lowercase("mocksat") == {}
+    assert group.search_lowercase("mocksat") != modis_dict
+    assert group.search_lowercase("mocksat") != olci_dict
+
+# END Test testCoreMMDGroup_SearchLowercase
+
+
+@pytest.mark.core
 def testCoreMMDGroup_GetLabel(monkeypatch):
     """Test helper function for getting labels"""
     with monkeypatch.context() as mp:
@@ -168,6 +217,27 @@ def testCoreMMDGroup_GetLabel(monkeypatch):
     assert group._get_label(concept_with_list, "value") is None
 
 # END Test testCoreMMDGroup_GetLabel
+
+
+@pytest.mark.core
+def testCoreMMDGroup_GetLabelLowercase(monkeypatch):
+    """Test wrapper function for getting lowercase labels"""
+    with monkeypatch.context() as mp:
+        mp.setattr(DataCache, "get_vocab", lambda *a: {})
+        group = MMDGroup("mmd", "https://vocab.met.no/mmd/Platform")
+
+    concept = {"label": "value", "label_but_big": "VaLuE"}
+
+    # Check for cases with no label results
+    with monkeypatch.context() as mp:
+        mp.setattr(group, "_get_label", lambda *a: None)
+        assert group._get_label_lowercase(concept, "label") is None
+
+    # Check for cases with label results
+    assert group._get_label_lowercase(concept, "label") == "value"
+    assert group._get_label_lowercase(concept, "label_but_big") == "value"
+
+# END Test testCoreMMDGroup_GetLabelLowercase
 
 
 @pytest.mark.core
