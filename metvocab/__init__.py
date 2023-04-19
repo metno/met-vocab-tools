@@ -18,7 +18,7 @@ limitations under the License.
 """
 
 __package__ = "metvocab"
-__version__ = "1.0.1"
+__version__ = "1.1"
 
 import os
 import logging
