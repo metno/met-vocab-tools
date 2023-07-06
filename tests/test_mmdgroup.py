@@ -52,16 +52,16 @@ def testLiveMMDGroup_Search():
         "short_name": "MODIS",
         "Long_Name": "Moderate-resolution Imaging Spectro-radiometer",
         "long_name": "Moderate-resolution Imaging Spectro-radiometer",
-        "Resource": "https://www.wmo-sat.info/oscar/instruments/view/modis",
-        "resource": "https://www.wmo-sat.info/oscar/instruments/view/modis"
+        "Resource": "https://vocab.met.no/mmd/Instrument/MODIS",
+        "resource": "https://vocab.met.no/mmd/Instrument/MODIS"
     }
     olci_dict = {
         "Short_Name": "OLCI",
         "short_name": "OLCI",
         "Long_Name": "Ocean and Land Colour Imager",
         "long_name": "Ocean and Land Colour Imager",
-        "Resource": "https://www.wmo-sat.info/oscar/instruments/view/olci",
-        "resource": "https://www.wmo-sat.info/oscar/instruments/view/olci"
+        "Resource": "https://vocab.met.no/mmd/Instrument/OLCI",
+        "resource": "https://vocab.met.no/mmd/Instrument/OLCI"
     }
 
     assert group.search("MODIS") == modis_dict
@@ -126,16 +126,16 @@ def testCoreMMDGroup_Search(filesDir):
         "short_name": "MODIS",
         "Long_Name": "Moderate-resolution Imaging Spectro-radiometer",
         "long_name": "Moderate-resolution Imaging Spectro-radiometer",
-        "Resource": "https://www.wmo-sat.info/oscar/instruments/view/modis",
-        "resource": "https://www.wmo-sat.info/oscar/instruments/view/modis"
+        "Resource": "https://vocab.met.no/mmd/Instrument/MODIS",
+        "resource": "https://vocab.met.no/mmd/Instrument/MODIS"
     }
     olci_dict = {
         "Short_Name": "OLCI",
         "short_name": "OLCI",
         "Long_Name": "Ocean and Land Colour Imager",
         "long_name": "Ocean and Land Colour Imager",
-        "Resource": "https://www.wmo-sat.info/oscar/instruments/view/olci",
-        "resource": "https://www.wmo-sat.info/oscar/instruments/view/olci"
+        "Resource": "https://vocab.met.no/mmd/Instrument/OLCI",
+        "resource": "https://vocab.met.no/mmd/Instrument/OLCI"
     }
 
     assert group.search("MODIS") == modis_dict
@@ -175,16 +175,16 @@ def testCoreMMDGroup_SearchLowercase(filesDir):
         "short_name": "MODIS",
         "Long_Name": "Moderate-resolution Imaging Spectro-radiometer",
         "long_name": "Moderate-resolution Imaging Spectro-radiometer",
-        "Resource": "https://www.wmo-sat.info/oscar/instruments/view/modis",
-        "resource": "https://www.wmo-sat.info/oscar/instruments/view/modis"
+        "Resource": "https://vocab.met.no/mmd/Instrument/MODIS",
+        "resource": "https://vocab.met.no/mmd/Instrument/MODIS"
     }
     olci_dict = {
         "Short_Name": "OLCI",
         "short_name": "OLCI",
         "Long_Name": "Ocean and Land Colour Imager",
         "long_name": "Ocean and Land Colour Imager",
-        "Resource": "https://www.wmo-sat.info/oscar/instruments/view/olci",
-        "resource": "https://www.wmo-sat.info/oscar/instruments/view/olci"
+        "Resource": "https://vocab.met.no/mmd/Instrument/OLCI",
+        "resource": "https://vocab.met.no/mmd/Instrument/OLCI"
     }
 
     assert group.search_lowercase("MODIS") == modis_dict

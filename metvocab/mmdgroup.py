@@ -78,14 +78,13 @@ class MMDGroup():
             found |= name == self._get_label(concept, "altLabel")
             found |= name == self._get_label(concept, "prefLabel")
             if found is True:
-                resource = self._get_resource(concept, "rdfs:seeAlso")
                 return {
                     "Short_Name": self._get_label(concept, "prefLabel"),
                     "short_name": self._get_label(concept, "prefLabel"),
                     "Long_Name": self._get_label(concept, "altLabel"),
                     "long_name": self._get_label(concept, "altLabel"),
-                    "Resource": resource if "wmo" in resource else None,
-                    "resource": resource if "wmo" in resource else None
+                    "Resource": self._get_resource(concept, "uri"),
+                    "resource": self._get_resource(concept, "uri")
                 }
 
         warnings.warn("Short_Name, Long_Name and Resource dict keys "
@@ -106,14 +105,13 @@ class MMDGroup():
             found |= name == self._get_label_lowercase(concept, "altLabel")
             found |= name == self._get_label_lowercase(concept, "prefLabel")
             if found is True:
-                resource = self._get_resource(concept, "rdfs:seeAlso")
                 return {
                     "Short_Name": self._get_label(concept, "prefLabel"),
                     "short_name": self._get_label(concept, "prefLabel"),
                     "Long_Name": self._get_label(concept, "altLabel"),
                     "long_name": self._get_label(concept, "altLabel"),
-                    "Resource": resource if "wmo" in resource else None,
-                    "resource": resource if "wmo" in resource else None
+                    "Resource": self._get_resource(concept, "uri"),
+                    "resource": self._get_resource(concept, "uri")
                 }
 
         warnings.warn("Short_Name, Long_Name and Resource dict keys "
