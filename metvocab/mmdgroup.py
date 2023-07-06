@@ -16,6 +16,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+import warnings
 
 from metvocab.cache import DataCache
 
@@ -80,9 +81,16 @@ class MMDGroup():
                 resource = self._get_resource(concept, "rdfs:seeAlso")
                 return {
                     "Short_Name": self._get_label(concept, "prefLabel"),
+                    "short_name": self._get_label(concept, "prefLabel"),
                     "Long_Name": self._get_label(concept, "altLabel"),
-                    "Resource": resource if "wmo" in resource else None
+                    "long_name": self._get_label(concept, "altLabel"),
+                    "Resource": resource if "wmo" in resource else None,
+                    "resource": resource if "wmo" in resource else None
                 }
+
+        warnings.warn("Short_Name, Long_Name and Resource dict keys "
+                      "are deprecated, and will be removed in v2.0 of"
+                      " met-vocab-tools.")
 
         return {}
 
@@ -101,9 +109,16 @@ class MMDGroup():
                 resource = self._get_resource(concept, "rdfs:seeAlso")
                 return {
                     "Short_Name": self._get_label(concept, "prefLabel"),
+                    "short_name": self._get_label(concept, "prefLabel"),
                     "Long_Name": self._get_label(concept, "altLabel"),
-                    "Resource": resource if "wmo" in resource else None
+                    "long_name": self._get_label(concept, "altLabel"),
+                    "Resource": resource if "wmo" in resource else None,
+                    "resource": resource if "wmo" in resource else None
                 }
+
+        warnings.warn("Short_Name, Long_Name and Resource dict keys "
+                      "are deprecated, and will be removed in v2.0 of"
+                      " met-vocab-tools.")
 
         return {}
     ##

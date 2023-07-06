@@ -49,13 +49,19 @@ def testLiveMMDGroup_Search():
 
     modis_dict = {
         "Short_Name": "MODIS",
+        "short_name": "MODIS",
         "Long_Name": "Moderate-resolution Imaging Spectro-radiometer",
-        "Resource": "https://www.wmo-sat.info/oscar/instruments/view/modis"
+        "long_name": "Moderate-resolution Imaging Spectro-radiometer",
+        "Resource": "https://www.wmo-sat.info/oscar/instruments/view/modis",
+        "resource": "https://www.wmo-sat.info/oscar/instruments/view/modis"
     }
     olci_dict = {
         "Short_Name": "OLCI",
+        "short_name": "OLCI",
         "Long_Name": "Ocean and Land Colour Imager",
-        "Resource": "https://www.wmo-sat.info/oscar/instruments/view/olci"
+        "long_name": "Ocean and Land Colour Imager",
+        "Resource": "https://www.wmo-sat.info/oscar/instruments/view/olci",
+        "resource": "https://www.wmo-sat.info/oscar/instruments/view/olci"
     }
 
     assert group.search("MODIS") == modis_dict
@@ -117,13 +123,19 @@ def testCoreMMDGroup_Search(filesDir):
 
     modis_dict = {
         "Short_Name": "MODIS",
+        "short_name": "MODIS",
         "Long_Name": "Moderate-resolution Imaging Spectro-radiometer",
-        "Resource": "https://www.wmo-sat.info/oscar/instruments/view/modis"
+        "long_name": "Moderate-resolution Imaging Spectro-radiometer",
+        "Resource": "https://www.wmo-sat.info/oscar/instruments/view/modis",
+        "resource": "https://www.wmo-sat.info/oscar/instruments/view/modis"
     }
     olci_dict = {
         "Short_Name": "OLCI",
+        "short_name": "OLCI",
         "Long_Name": "Ocean and Land Colour Imager",
-        "Resource": "https://www.wmo-sat.info/oscar/instruments/view/olci"
+        "long_name": "Ocean and Land Colour Imager",
+        "Resource": "https://www.wmo-sat.info/oscar/instruments/view/olci",
+        "resource": "https://www.wmo-sat.info/oscar/instruments/view/olci"
     }
 
     assert group.search("MODIS") == modis_dict
@@ -160,13 +172,19 @@ def testCoreMMDGroup_SearchLowercase(filesDir):
 
     modis_dict = {
         "Short_Name": "MODIS",
+        "short_name": "MODIS",
         "Long_Name": "Moderate-resolution Imaging Spectro-radiometer",
-        "Resource": "https://www.wmo-sat.info/oscar/instruments/view/modis"
+        "long_name": "Moderate-resolution Imaging Spectro-radiometer",
+        "Resource": "https://www.wmo-sat.info/oscar/instruments/view/modis",
+        "resource": "https://www.wmo-sat.info/oscar/instruments/view/modis"
     }
     olci_dict = {
         "Short_Name": "OLCI",
+        "short_name": "OLCI",
         "Long_Name": "Ocean and Land Colour Imager",
-        "Resource": "https://www.wmo-sat.info/oscar/instruments/view/olci"
+        "long_name": "Ocean and Land Colour Imager",
+        "Resource": "https://www.wmo-sat.info/oscar/instruments/view/olci",
+        "resource": "https://www.wmo-sat.info/oscar/instruments/view/olci"
     }
 
     assert group.search_lowercase("MODIS") == modis_dict
