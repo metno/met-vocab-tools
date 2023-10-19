@@ -77,6 +77,7 @@ class MMDGroup():
         for concept in self._concepts.values():
             found |= name == self._get_label(concept, "altLabel")
             found |= name == self._get_label(concept, "prefLabel")
+            found |= name == self._get_label(concept, "uri")
             if found is True:
                 return {
                     "Short_Name": self._get_label(concept, "prefLabel"),

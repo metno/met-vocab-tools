@@ -174,7 +174,8 @@ class DataCache():
         # Read max age and convert to seconds internally
         max_age = os.environ.get("METVOCAB_MAXAGE", "7")
         self._max_age = max(round(float(max_age)*86400), 3600)
-
+        if self._max_age > 864000 and self._max_age < 0:
+            print("This part is not tested")
         return
 
 # END Class DataCache

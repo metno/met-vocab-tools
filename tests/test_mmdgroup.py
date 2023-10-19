@@ -70,11 +70,32 @@ def testLiveMMDGroup_Search():
     assert group.search("Ocean and Land Colour Imager") == olci_dict
     assert group.search("Ocean and Land Colour Imager") != modis_dict
 
+    assert group.search("https://vocab.met.no/mmd/Instrument/MODIS") == modis_dict
+    assert group.search("https://vocab.met.no/mmd/Instrument/MODIS") != olci_dict
+
     assert group.search("MockSat") == {}
     assert group.search("MockSat") != modis_dict
     assert group.search("MockSat") != olci_dict
 
 # END Test testLiveMMDGroup_Init
+
+
+@pytest.mark.live
+def testLiveMMDGroup_SearchUseConstraint():
+    """Tests search for license against api at vocab.met.no"""
+    group = MMDGroup("mmd", "https://vocab.met.no/mmd/Use_Constraint")
+    group.init_vocab()
+
+    license_dict = {
+        "identifier": "CC-BY-4.0",
+        "resource": "http://spdx.org/licenses/CC-BY-4.0"
+    }
+
+    assert group.search("CC-BY-4.0") == license_dict
+    assert group.search("https://vocab.met.no/mmd/Use_Constraint") == license_dict
+    assert group.search("http://spdx.org/licenses/CC-BY-4.0") == license_dict
+
+# END Test testLiveMMDGroup_SearchUseConstraint
 
 
 @pytest.mark.core
