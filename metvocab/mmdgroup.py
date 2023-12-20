@@ -75,8 +75,11 @@ class MMDGroup():
         """
         found = False
         for concept in self._concepts.values():
-            found |= name == self._get_label(concept, "altLabel")
+            found |= self._search_altLabel(concept, "altLabel", name)
             found |= name == self._get_label(concept, "prefLabel")
+            found |= name == self._get_label(concept, "uri")
+            found |= self._search_resource(concept, "exactMatch", name)
+
             if found is True:
                 return {
                     "Short_Name": self._get_label(concept, "prefLabel"),
@@ -150,6 +153,25 @@ class MMDGroup():
 
         return None
 
+    def _search_altLabel(self, concept, label, name):
+        """Helper function for search method"""
+        if isinstance(concept, dict):
+            values = concept.get(label)
+        else:
+            return False
+
+        if isinstance(values, str):
+            return values == name
+        elif isinstance(values, list):
+            if len(values) > 0 and isinstance(values[0], dict):
+                for value in values:
+                    if value.get("value", None) == name:
+                        return True
+        elif isinstance(values, dict):
+            return values.get("value", None) == name
+
+        return False
+
     def _get_label_lowercase(self, concept, label):
         """Wrapper function around _get_label to not call
         lower() on non-str instances
@@ -176,4 +198,22 @@ class MMDGroup():
 
         return ""
 
+    def _search_resource(self, concept, label, uri):
+        """Helper function for search method"""
+        if isinstance(concept, dict):
+            values = concept.get(label)
+        else:
+            return False
+
+        if isinstance(values, dict):
+            return values.get("uri", "") == uri
+        elif isinstance(values, list):
+            if len(values) > 0 and isinstance(values[0], dict):
+                for value in values:
+                    if (value.get("uri", "") == uri):
+                        return True
+        elif isinstance(values, str):
+            return values == uri
+
+        return False
 # END Class MMDGroup

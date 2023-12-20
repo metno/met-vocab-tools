@@ -64,17 +64,39 @@ def testLiveMMDGroup_Search():
         "resource": "https://vocab.met.no/mmd/Instrument/OLCI"
     }
 
-    assert group.search("MODIS") == modis_dict
-    assert group.search("MODIS") != olci_dict
+    assert group.search("https://vocab.met.no/mmd/Instrument/MODIS") == modis_dict
+    assert group.search("https://vocab.met.no/mmd/Instrument/MODIS") != olci_dict
 
+    assert group.search("https://vocab.met.no/mmd/Instrument/OLCI") == olci_dict
     assert group.search("Ocean and Land Colour Imager") == olci_dict
-    assert group.search("Ocean and Land Colour Imager") != modis_dict
 
     assert group.search("MockSat") == {}
-    assert group.search("MockSat") != modis_dict
-    assert group.search("MockSat") != olci_dict
 
 # END Test testLiveMMDGroup_Init
+
+
+@pytest.mark.live
+def testLiveMMDGroup_SearchUseConstraint():
+    """Tests search for license against api at vocab.met.no"""
+    group = MMDGroup("mmd", "https://vocab.met.no/mmd/Use_Constraint")
+    group.init_vocab()
+
+    license_dict = {
+
+        "Short_Name": "CC-BY-4.0",
+        "short_name": "CC-BY-4.0",
+        "Long_Name": "Navngivelse",
+        "long_name": "Navngivelse",
+        "Resource": "https://vocab.met.no/mmd/Use_Constraint/CC-BY-4.0",
+        "resource": "https://vocab.met.no/mmd/Use_Constraint/CC-BY-4.0"
+
+    }
+
+    assert group.search("CC-BY-4.0") == license_dict
+    assert group.search("https://vocab.met.no/mmd/Use_Constraint") != license_dict
+    assert group.search("https://vocab.met.no/mmd/Use_Constraint/CC-BY-4.0") == license_dict
+
+# END Test testLiveMMDGroup_SearchUseConstraint
 
 
 @pytest.mark.core
@@ -138,15 +160,13 @@ def testCoreMMDGroup_Search(filesDir):
         "resource": "https://vocab.met.no/mmd/Instrument/OLCI"
     }
 
-    assert group.search("MODIS") == modis_dict
-    assert group.search("MODIS") != olci_dict
+    assert group.search("https://vocab.met.no/mmd/Instrument/MODIS") == modis_dict
+    assert group.search("https://vocab.met.no/mmd/Instrument/MODIS") != olci_dict
 
-    assert group.search("Ocean and Land Colour Imager") == olci_dict
-    assert group.search("Ocean and Land Colour Imager") != modis_dict
+    assert group.search("https://vocab.met.no/mmd/Instrument/OLCI") == olci_dict
 
     assert group.search("MockSat") == {}
-    assert group.search("MockSat") != modis_dict
-    assert group.search("MockSat") != olci_dict
+
 
 # END Test testCoreMMDGroup_Search
 
