@@ -64,17 +64,39 @@ def testLiveMMDGroup_Search():
         "resource": "https://vocab.met.no/mmd/Instrument/OLCI"
     }
 
-    assert group.search("MODIS") == modis_dict
-    assert group.search("MODIS") != olci_dict
+    assert group.search("https://vocab.met.no/mmd/Instrument/MODIS") == modis_dict
+    assert group.search("https://vocab.met.no/mmd/Instrument/MODIS") != olci_dict
 
+    assert group.search("https://vocab.met.no/mmd/Instrument/OLCI") == olci_dict
     assert group.search("Ocean and Land Colour Imager") == olci_dict
-    assert group.search("Ocean and Land Colour Imager") != modis_dict
 
     assert group.search("MockSat") == {}
-    assert group.search("MockSat") != modis_dict
-    assert group.search("MockSat") != olci_dict
 
 # END Test testLiveMMDGroup_Init
+
+
+@pytest.mark.live
+def testLiveMMDGroup_SearchUseConstraint():
+    """Tests search for license against api at vocab.met.no"""
+    group = MMDGroup("mmd", "https://vocab.met.no/mmd/Use_Constraint")
+    group.init_vocab()
+
+    license_dict = {
+
+        "Short_Name": "CC-BY-4.0",
+        "short_name": "CC-BY-4.0",
+        "Long_Name": "Creative Commons Attribution 4.0 International",
+        "long_name": "Creative Commons Attribution 4.0 International",
+        "Resource": "https://vocab.met.no/mmd/Use_Constraint/CC-BY-4.0",
+        "resource": "https://vocab.met.no/mmd/Use_Constraint/CC-BY-4.0"
+
+    }
+
+    assert group.search("CC-BY-4.0") == license_dict
+    assert group.search("https://vocab.met.no/mmd/Use_Constraint") != license_dict
+    assert group.search("https://vocab.met.no/mmd/Use_Constraint/CC-BY-4.0") == license_dict
+
+# END Test testLiveMMDGroup_SearchUseConstraint
 
 
 @pytest.mark.core
@@ -138,15 +160,13 @@ def testCoreMMDGroup_Search(filesDir):
         "resource": "https://vocab.met.no/mmd/Instrument/OLCI"
     }
 
-    assert group.search("MODIS") == modis_dict
-    assert group.search("MODIS") != olci_dict
+    assert group.search("https://vocab.met.no/mmd/Instrument/MODIS") == modis_dict
+    assert group.search("https://vocab.met.no/mmd/Instrument/MODIS") != olci_dict
 
-    assert group.search("Ocean and Land Colour Imager") == olci_dict
-    assert group.search("Ocean and Land Colour Imager") != modis_dict
+    assert group.search("https://vocab.met.no/mmd/Instrument/OLCI") == olci_dict
 
     assert group.search("MockSat") == {}
-    assert group.search("MockSat") != modis_dict
-    assert group.search("MockSat") != olci_dict
+
 
 # END Test testCoreMMDGroup_Search
 
@@ -259,6 +279,98 @@ def testCoreMMDGroup_GetLabelLowercase(monkeypatch):
 
 
 @pytest.mark.core
+def testCoreMMDGroup_SearchAltLabel(monkeypatch):
+    """Test helper function for getting labels"""
+    with monkeypatch.context() as mp:
+        mp.setattr(DataCache, "get_vocab", lambda *a: {})
+        group = MMDGroup("mmd", "https://vocab.met.no/mmd/Platform")
+
+    concept = {"label": "value"}
+    concept_with_dict = {"label": {"value": "inner_value"}}
+    concept_with_list = {"label": [{"value": "name0"}, {"value": "name1"}]}
+    concept_with_empty_list = {"label": []}
+    invalid_concept = {"resource": 123}
+
+    assert group._search_altLabel("NotADict", "label", "value") is False
+    assert group._search_altLabel(concept, "label", "value") is True
+    assert group._search_altLabel(concept, "value", "value") is False
+
+    assert group._search_altLabel(concept_with_dict, "label", "inner_value") is True
+    assert group._search_altLabel(concept_with_dict, "value", "inner_value") is False
+
+    assert group._search_altLabel(invalid_concept, "resource", "inner_value") is False
+
+    assert group._search_altLabel(concept_with_empty_list, "label", "inner_value") is False
+
+    assert group._search_altLabel(concept_with_list, "label", "name0") is True
+    assert group._search_altLabel(concept_with_list, "label", "name2") is False
+
+# END Test testCoreMMDGroup_GetLabelLowercase
+
+
+@pytest.mark.core
+def testCoreMMDGroup_SearchAltLabelLowercase(monkeypatch):
+    """Test helper function for getting labels"""
+    with monkeypatch.context() as mp:
+        mp.setattr(DataCache, "get_vocab", lambda *a: {})
+        group = MMDGroup("mmd", "https://vocab.met.no/mmd/Platform")
+
+    concept = {"label": "Value"}
+    concept_with_dict = {"label": {"value": "Inner_value"}}
+    concept_with_list = {"label": [{"value": "Name0"}, {"value": "Name1"}]}
+    concept_with_empty_list = {"label": []}
+    invalid_concept = {"resource": 123}
+
+    assert group._search_altLabel_lowercase("NotADict", "label", "value") is False
+    assert group._search_altLabel_lowercase(concept, "label", "value") is True
+    assert group._search_altLabel_lowercase(concept, "value", "value") is False
+
+    assert group._search_altLabel_lowercase(concept_with_dict, "label", "inner_value") is True
+    assert group._search_altLabel_lowercase(concept_with_dict, "value", "inner_value") is False
+
+    assert group._search_altLabel_lowercase(invalid_concept, "resource", "inner_value") is False
+
+    assert group._search_altLabel_lowercase(
+        concept_with_empty_list, "label", "inner_value") is False
+
+    assert group._search_altLabel_lowercase(concept_with_list, "label", "name0") is True
+    assert group._search_altLabel_lowercase(concept_with_list, "label", "name2") is False
+
+# END Test testCoreMMDGroup_GetLabelLowercase
+
+
+@pytest.mark.core
+def testCoreMMDGroup_GetAltLabel(monkeypatch):
+    """Test helper function for getting labels"""
+    with monkeypatch.context() as mp:
+        mp.setattr(DataCache, "get_vocab", lambda *a: {})
+        group = MMDGroup("mmd", "https://vocab.met.no/mmd/Platform")
+
+    concept = {"label": "value"}
+    concept_with_dict = {"label": {"value": "inner_value"}}
+    concept_with_list = {"label": [{"value": "name0"}, {"value": "name1"}]}
+    concept_with_empty_list = {"label": []}
+    invalid_concept = {"resource": 123}
+
+    assert group._get_altLabel("NotADict", "label") is None
+
+    assert group._get_altLabel(concept, "label") == "value"
+    assert group._get_altLabel(concept, "value") is None
+
+    assert group._get_altLabel(concept_with_dict, "label") == "inner_value"
+    assert group._get_altLabel(concept_with_dict, "value") is None
+
+    assert group._get_altLabel(invalid_concept, "resource") is None
+
+    assert group._get_altLabel(concept_with_empty_list, "label") is None
+
+    assert group._get_altLabel(concept_with_list, "label") == "name1"
+    assert group._get_altLabel(concept_with_list, "value") is None
+
+# END Test testCoreMMDGroup_GetAltLabel
+
+
+@pytest.mark.core
 def testCoreMMDGroup_GetResource(monkeypatch):
     """Test helper function for getting resources"""
     with monkeypatch.context() as mp:
@@ -289,3 +401,36 @@ def testCoreMMDGroup_GetResource(monkeypatch):
     assert group._get_resource({"resource": ["hello"]}, "resource") == ""
 
 # END Test testCoreMMDGroup_GetResource
+
+
+@pytest.mark.core
+def testCoreMMDGroup_SearchResource(monkeypatch):
+    """Test helper function for getting resources"""
+    with monkeypatch.context() as mp:
+        mp.setattr(DataCache, "get_vocab", lambda *a: {})
+        group = MMDGroup("mmd", "https://vocab.met.no/mmd/Platform")
+
+    concept_dict = {"resource": "https://vocab.met.no"}
+    concept_with_list = {"resource": [{"uri": "https://vocab.met.no"}, {"uri": "wmo.com"}]}
+    concept_with_dict = {"resource": {"uri": "https://vocab.met.no"}}
+    invalid_concept = {"resource": 123}
+    concept_with_empty_list = {"resource": []}
+
+    assert group._search_resource("NotADict", "label", "https://vocab.met.no") is False
+
+    assert group._search_resource(concept_dict, "resource", "https://vocab.met.no") is True
+    assert group._search_resource(concept_dict, "resource", "SomethingElse") is False
+
+    assert group._search_resource(concept_with_list, "resource", "https://vocab.met.no") is True
+    assert group._search_resource(concept_with_list, "resource", "SomethingElse") is False
+
+    assert group._search_resource(concept_with_dict, "resource", "https://vocab.met.no") is True
+    assert group._search_resource(concept_with_dict, "resource", "SomethingElse") is False
+
+    assert group._search_resource(invalid_concept, "resource", "SomethingElse") is False
+
+    assert group._search_resource(concept_with_empty_list, "resource",
+                                  "https://vocab.met.no") is False
+    assert group._search_resource({"resource": ["hello"]}, "resource", "hello") is False
+
+# END Test testCoreMMDGroup_SearchResource
