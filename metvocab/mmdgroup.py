@@ -84,8 +84,8 @@ class MMDGroup():
                 return {
                     "Short_Name": self._get_label(concept, "prefLabel"),
                     "short_name": self._get_label(concept, "prefLabel"),
-                    "Long_Name": self._get_label(concept, "altLabel"),
-                    "long_name": self._get_label(concept, "altLabel"),
+                    "Long_Name": self._get_altLabel(concept, "altLabel"),
+                    "long_name": self._get_altLabel(concept, "altLabel"),
                     "Resource": self._get_resource(concept, "uri"),
                     "resource": self._get_resource(concept, "uri")
                 }
@@ -105,14 +105,14 @@ class MMDGroup():
         name = name.lower()
         found = False
         for concept in self._concepts.values():
-            found |= name == self._get_label_lowercase(concept, "altLabel")
+            found |= self._search_altLabel_lowercase(concept, "altLabel", name)
             found |= name == self._get_label_lowercase(concept, "prefLabel")
             if found is True:
                 return {
                     "Short_Name": self._get_label(concept, "prefLabel"),
                     "short_name": self._get_label(concept, "prefLabel"),
-                    "Long_Name": self._get_label(concept, "altLabel"),
-                    "long_name": self._get_label(concept, "altLabel"),
+                    "Long_Name": self._get_altLabel(concept, "altLabel"),
+                    "long_name": self._get_altLabel(concept, "altLabel"),
                     "Resource": self._get_resource(concept, "uri"),
                     "resource": self._get_resource(concept, "uri")
                 }
@@ -167,10 +167,51 @@ class MMDGroup():
                 for value in values:
                     if value.get("value", None) == name:
                         return True
+                return False
         elif isinstance(values, dict):
             return values.get("value", None) == name
 
         return False
+
+    def _search_altLabel_lowercase(self, concept, label, name):
+        """Helper function for search method """
+        if isinstance(concept, dict):
+            values = concept.get(label)
+        else:
+            return False
+
+        if isinstance(values, str):
+            return values.lower() == name
+        elif isinstance(values, list):
+            if len(values) > 0 and isinstance(values[0], dict):
+                for value in values:
+                    altlabel = value.get("value", None)
+                    if isinstance(altlabel, str) and altlabel.lower() == name:
+                        return True
+        elif isinstance(values, dict):
+            altlabel = values.get("value", None)
+            return isinstance(altlabel, str) and altlabel.lower() == name
+
+        return False
+
+    def _get_altLabel(self, concept, label):
+        """Helper function for search method"""
+        if isinstance(concept, dict):
+            values = concept.get(label)
+        else:
+            return None
+
+        if isinstance(values, str):
+            return values
+        elif isinstance(values, list):
+            # Fetches the value in last index for altLabel if its a list
+            if len(values) > 0 and isinstance(values[0], dict):
+                return values[len(values)-1].get("value", None)
+
+        elif isinstance(values, dict):
+            return values.get("value", None)
+
+        return None
 
     def _get_label_lowercase(self, concept, label):
         """Wrapper function around _get_label to not call
